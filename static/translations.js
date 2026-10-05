@@ -54,7 +54,9 @@ const UI_TRANSLATIONS = {
     add_row: "＋ Add Ingredient Row",
     save_recipe: "Save Recipe",
     cancel: "Cancel",
-    check_when_prepped: "Check when prepped"
+    check_when_prepped: "Check when prepped",
+    per_page: "Per page:",
+    all: "All"
   },
   hi: {
     brand_tag: "संस्थागत रसोई रीढ़ • 100% शुद्ध शाकाहारी (RM 2019)",

@@ -108,6 +108,29 @@
       <!-- Dynamic recipe cards -->
     </section>
 
+    <!-- Pagination Controls for High Performance -->
+    <div class="pagination-section" id="paginationSection" style="display:none;">
+      <div class="pagination-info" id="paginationInfo">Showing 1–24 of 446 recipes</div>
+      <div class="pagination-controls">
+        <button class="btn-page btn-page-nav" id="btnPageFirst" title="First Page">⏮</button>
+        <button class="btn-page btn-page-nav" id="btnPagePrev" title="Previous Page">◀</button>
+        <div class="pagination-pages" id="paginationPages">
+          <!-- Page number buttons -->
+        </div>
+        <button class="btn-page btn-page-nav" id="btnPageNext" title="Next Page">▶</button>
+        <button class="btn-page btn-page-nav" id="btnPageLast" title="Last Page">⏭</button>
+      </div>
+      <div class="page-size-selector">
+        <label for="pageSizeSelect" data-i18n="per_page">Per page:</label>
+        <select id="pageSizeSelect">
+          <option value="24" selected>24</option>
+          <option value="48">48</option>
+          <option value="96">96</option>
+          <option value="all" data-i18n="all">All</option>
+        </select>
+      </div>
+    </div>
+
     <!-- Empty State -->
     <div class="empty-state" id="emptyState" style="display:none;">
       <div class="empty-icon">🍲</div>

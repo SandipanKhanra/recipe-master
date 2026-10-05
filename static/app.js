@@ -9,6 +9,11 @@ let currentScaledYield = null;
 let isOfflineMode = false;
 let currentLanguage = 'en';
 
+// Pagination & Performance Optimization State
+let currentFilteredRecipes = [];
+let currentPage = 1;
+let pageSize = 24;
+
 // DOM Elements
 const searchInput = document.getElementById('searchInput');
 const btnClearSearch = document.getElementById('btnClearSearch');
@@ -17,6 +22,16 @@ const categoryChips = document.getElementById('categoryChips');
 const recipesGrid = document.getElementById('recipesGrid');
 const resultsCount = document.getElementById('resultsCount');
 const emptyState = document.getElementById('emptyState');
+
+// Pagination Elements
+const paginationSection = document.getElementById('paginationSection');
+const paginationInfo = document.getElementById('paginationInfo');
+const paginationPages = document.getElementById('paginationPages');
+const btnPageFirst = document.getElementById('btnPageFirst');
+const btnPagePrev = document.getElementById('btnPagePrev');
+const btnPageNext = document.getElementById('btnPageNext');
+const btnPageLast = document.getElementById('btnPageLast');
+const pageSizeSelect = document.getElementById('pageSizeSelect');
 
 // Modals
 const recipeModalBackdrop = document.getElementById('recipeModalBackdrop');
@@ -100,6 +115,7 @@ function renderCategoryChipsFromMap(cats) {
       categoryChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       currentCategory = chip.dataset.cat;
+      currentPage = 1;
       filterAndRenderOffline();
     });
   });
@@ -125,6 +141,7 @@ function setupEventListeners() {
   // Search
   searchInput.addEventListener('input', (e) => {
     currentSearch = e.target.value.trim();
+    currentPage = 1;
     btnClearSearch.style.display = currentSearch ? 'block' : 'none';
     if (isOfflineMode) {
       filterAndRenderOffline();
@@ -136,6 +153,7 @@ function setupEventListeners() {
   btnClearSearch.addEventListener('click', () => {
     searchInput.value = '';
     currentSearch = '';
+    currentPage = 1;
     btnClearSearch.style.display = 'none';
     if (isOfflineMode) {
       filterAndRenderOffline();
@@ -147,7 +165,19 @@ function setupEventListeners() {
   // Sort
   sortSelect.addEventListener('change', (e) => {
     currentSort = e.target.value;
+    currentPage = 1;
     sortAndRenderRecipes();
+  });
+
+  // Pagination navigation listeners
+  if (btnPageFirst) btnPageFirst.addEventListener('click', () => goToPage(1));
+  if (btnPagePrev) btnPagePrev.addEventListener('click', () => goToPage(currentPage - 1));
+  if (btnPageNext) btnPageNext.addEventListener('click', () => goToPage(currentPage + 1));
+  if (btnPageLast) btnPageLast.addEventListener('click', () => goToPage(getTotalPages()));
+  if (pageSizeSelect) pageSizeSelect.addEventListener('change', (e) => {
+    pageSize = (e.target.value === 'all') ? 'all' : parseInt(e.target.value, 10);
+    currentPage = 1;
+    renderRecipeGrid();
   });
 
   // Modals close
@@ -255,6 +285,7 @@ function renderCategoryChips(categories) {
       categoryChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       currentCategory = chip.dataset.cat;
+      currentPage = 1;
       if (isOfflineMode) {
         filterAndRenderOffline();
       } else {
@@ -300,26 +331,59 @@ function sortAndRenderRecipes(customList = null) {
     list.sort((a, b) => (b.base_yield || 0) - (a.base_yield || 0));
   }
 
-  renderRecipeGrid(list);
+  currentFilteredRecipes = list;
+  renderRecipeGrid();
 }
 
-// Render Grid
-function renderRecipeGrid(recipes) {
+function getTotalPages() {
+  const totalItems = currentFilteredRecipes.length;
+  if (pageSize === 'all') return 1;
+  const perPage = parseInt(pageSize, 10) || 24;
+  return Math.max(1, Math.ceil(totalItems / perPage));
+}
+
+// Render Grid (Optimized with Progressive Pagination Slice)
+function renderRecipeGrid(recipes = null) {
+  if (recipes) {
+    currentFilteredRecipes = recipes;
+  }
+  const totalItems = currentFilteredRecipes.length;
   const dict = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : {};
-  if (recipes.length === 0) {
+  
+  if (totalItems === 0) {
     recipesGrid.innerHTML = '';
     emptyState.style.display = 'block';
     resultsCount.textContent = '0 recipes found';
+    if (paginationSection) paginationSection.style.display = 'none';
     return;
   }
 
   emptyState.style.display = 'none';
+
+  // Calculate pagination bounds
+  const totalPages = getTotalPages();
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
+
+  const itemsPerPage = (pageSize === 'all') ? totalItems : parseInt(pageSize, 10);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+  const pageRecipes = (pageSize === 'all') ? currentFilteredRecipes : currentFilteredRecipes.slice(startIndex, endIndex);
+
+  // Status Header with localized category & item range
   const localizedCatHeader = (typeof getLocalizedCategory === 'function') ? getLocalizedCategory(currentCategory, currentLanguage) : currentCategory;
   const inCatText = currentCategory !== 'all' ? (dict.in_category ? dict.in_category.replace('{cat}', escapeHtml(localizedCatHeader)) : `in <em>${escapeHtml(localizedCatHeader)}</em>`) : '';
-  const showingText = dict.showing_recipes ? dict.showing_recipes.replace('{count}', recipes.length) : `Showing <strong>${recipes.length}</strong> recipes`;
+  
+  let showingText = '';
+  if (pageSize === 'all' || totalItems <= itemsPerPage) {
+    showingText = dict.showing_recipes ? dict.showing_recipes.replace('{count}', totalItems) : `Showing <strong>${totalItems}</strong> recipes`;
+  } else {
+    showingText = `Showing <strong>${startIndex + 1}–${endIndex}</strong> of <strong>${totalItems}</strong> recipes <span class="page-count-badge">Page ${currentPage} of ${totalPages}</span>`;
+  }
   resultsCount.innerHTML = `${showingText} ${inCatText}`;
 
-  const cardsHtml = recipes.map(r => {
+  // Render cards only for the active page slice (Maximum performance)
+  const cardsHtml = pageRecipes.map(r => {
     const ingCount = r.ingredients_count || (r.ingredients ? r.ingredients.length : 0);
     const cuisineTag = r.cuisine ? `<span class="badge badge-cuisine">${escapeHtml(r.cuisine)}</span>` : '';
     const localizedCat = (typeof getLocalizedCategory === 'function') ? getLocalizedCategory(r.category, currentLanguage) : r.category;
@@ -360,7 +424,74 @@ function renderRecipeGrid(recipes) {
   }).join('');
 
   recipesGrid.innerHTML = cardsHtml;
+  renderPagination(totalItems, totalPages, startIndex, endIndex);
 }
+
+function renderPagination(totalItems, totalPages, startIndex, endIndex) {
+  if (!paginationSection) return;
+
+  if (totalItems <= 0) {
+    paginationSection.style.display = 'none';
+    return;
+  }
+
+  paginationSection.style.display = 'flex';
+  
+  if (pageSize === 'all' || totalPages <= 1) {
+    paginationInfo.innerHTML = `Showing all <strong>${totalItems}</strong> recipes`;
+    btnPageFirst.disabled = true;
+    btnPagePrev.disabled = true;
+    btnPageNext.disabled = true;
+    btnPageLast.disabled = true;
+    paginationPages.innerHTML = `<button class="btn-page active">1</button>`;
+    return;
+  }
+
+  paginationInfo.innerHTML = `Showing <strong>${startIndex + 1}–${endIndex}</strong> of <strong>${totalItems}</strong> recipes`;
+  btnPageFirst.disabled = (currentPage === 1);
+  btnPagePrev.disabled = (currentPage === 1);
+  btnPageNext.disabled = (currentPage === totalPages);
+  btnPageLast.disabled = (currentPage === totalPages);
+
+  const range = getPaginationRange(currentPage, totalPages);
+  let pagesHtml = '';
+  range.forEach(p => {
+    if (p === '...') {
+      pagesHtml += `<span class="page-ellipsis">…</span>`;
+    } else {
+      const active = (p === currentPage) ? 'active' : '';
+      pagesHtml += `<button class="btn-page ${active}" onclick="goToPage(${p})">${p}</button>`;
+    }
+  });
+  paginationPages.innerHTML = pagesHtml;
+}
+
+function getPaginationRange(current, total) {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  if (current <= 4) {
+    return [1, 2, 3, 4, 5, '...', total];
+  }
+  if (current >= total - 3) {
+    return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+  }
+  return [1, '...', current - 1, current, current + 1, '...', total];
+}
+
+function goToPage(page) {
+  const totalPages = getTotalPages();
+  if (page < 1 || page > totalPages || page === currentPage) return;
+  currentPage = page;
+  renderRecipeGrid();
+  
+  // Smooth scroll up to recipe grid or controls
+  const targetEl = document.querySelector('.controls-section') || recipesGrid;
+  if (targetEl) {
+    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+window.goToPage = goToPage;
 
 // View Recipe Details & Scaler
 async function viewRecipe(recipeId) {
@@ -558,6 +689,7 @@ function closeRecipeModal() {
 function resetFilters() {
   currentCategory = 'all';
   currentSearch = '';
+  currentPage = 1;
   searchInput.value = '';
   btnClearSearch.style.display = 'none';
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
