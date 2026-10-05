@@ -376,6 +376,9 @@ function renderRecipeGrid(recipes) {
           <button class="btn btn-sm btn-card-pdf" onclick="directPdfDownload('${r.id}', ${r.base_yield})" title="Direct PDF Download">
             ${dict.pdf || '📄 PDF'}
           </button>
+          <a href="https://www.google.com/search?q=${encodeURIComponent(r.title + ' recipe')}" target="_blank" rel="noopener noreferrer" class="btn-card-search" title="Google Search '${escapeHtml(r.title)}'">
+            🔍
+          </a>
         </div>
       </div>
     `;
@@ -408,6 +411,13 @@ async function viewRecipe(recipeId) {
     document.getElementById('modalRecipeTitle').textContent = recipe.title;
     document.getElementById('modalRecipeCuisine').textContent = recipe.cuisine ? `Cuisine / Style: ${recipe.cuisine}` : `Category: ${localizedCat}`;
     
+    // Set Google Search Link for Recipe
+    const googleSearchBtn = document.getElementById('btnGoogleSearchRecipe');
+    if (googleSearchBtn) {
+      googleSearchBtn.href = `https://www.google.com/search?q=${encodeURIComponent(recipe.title + ' recipe')}`;
+      googleSearchBtn.title = `Search "${recipe.title}" on Google`;
+    }
+
     document.getElementById('modalCategoryBadges').innerHTML = `
       <span class="badge badge-cat">${escapeHtml(localizedCat)}</span>
       ${recipe.cuisine ? `<span class="badge badge-cuisine">${escapeHtml(recipe.cuisine)}</span>` : ''}
@@ -485,7 +495,14 @@ function applyScaling(targetYield) {
           <input type="checkbox" class="ing-prep-check" onchange="toggleRowCheck(${idx}, this.checked)" title="${dict.check_when_prepped || 'Check when prepped'}" />
         </td>
         <td><span class="ing-stage-tag">${escapeHtml(locStg)}</span></td>
-        <td><strong>${escapeHtml(ing.name)}</strong></td>
+        <td>
+          <div class="ing-name-row">
+            <span class="ing-name-label">${escapeHtml(ing.name)}</span>
+            <a href="https://www.google.com/search?q=${encodeURIComponent(ing.name)}" target="_blank" rel="noopener noreferrer" class="ing-google-link" title="Google Search: ${escapeHtml(ing.name)}" onclick="event.stopPropagation()">
+              <span>🔍 Search</span>
+            </a>
+          </div>
+        </td>
         <td style="text-align: right;" class="qty-base">${formatQty(baseQty)}</td>
         <td style="text-align: right;" class="qty-val">${formatQty(scaledQty)}</td>
         <td>${escapeHtml(ing.unit || '')}</td>
