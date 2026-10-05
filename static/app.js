@@ -57,7 +57,7 @@ const btnPrintRecipe = document.getElementById('btnPrintRecipe');
 const toast = document.getElementById('toast');
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   initTheme();
   initLanguage();
   // Check if opened via file:// or if seed data is present
@@ -70,7 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
     loadRecipes();
   }
   setupEventListeners();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 
 function initOfflineData() {
   if (window.SEED_RECIPES && Array.isArray(window.SEED_RECIPES)) {
@@ -229,7 +235,7 @@ function setupEventListeners() {
   // Theme Toggle (Dark / Light)
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', toggleTheme);
+    themeToggleBtn.onclick = toggleTheme;
   }
 }
 
@@ -860,26 +866,41 @@ function syncGoogleTranslate(lang) {
 
 // Dark / Light Theme Handling
 function initTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-  updateThemeIcon(currentTheme);
+  const currentTheme = document.documentElement.getAttribute('data-theme') || localStorage.getItem('recipe_theme') || 'light';
+  applyTheme(currentTheme);
 }
 
 function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', newTheme);
+  const isCurrentDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    || document.documentElement.classList.contains('dark')
+    || (document.body && document.body.getAttribute('data-theme') === 'dark');
+  const newTheme = isCurrentDark ? 'light' : 'dark';
+  applyTheme(newTheme);
   try {
     localStorage.setItem('recipe_theme', newTheme);
   } catch (e) {
     console.warn('Could not save theme to localStorage:', e);
   }
-  updateThemeIcon(newTheme);
   showToast(newTheme === 'dark' ? '🌙 Dark theme enabled' : '☀️ Light theme enabled');
 }
 
-function updateThemeIcon(theme) {
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.classList.toggle('dark', theme === 'dark');
+  if (document.body) {
+    document.body.setAttribute('data-theme', theme);
+    document.body.classList.toggle('dark-theme', theme === 'dark');
+  }
   const icon = document.getElementById('themeToggleIcon');
   if (icon) {
     icon.textContent = (theme === 'dark') ? '☀️' : '🌙';
   }
+  const btn = document.getElementById('themeToggleBtn');
+  if (btn) {
+    btn.title = (theme === 'dark') ? 'Switch to Light Theme' : 'Switch to Dark Theme';
+    btn.setAttribute('aria-label', (theme === 'dark') ? 'Switch to Light Theme' : 'Switch to Dark Theme');
+  }
 }
+
+window.toggleTheme = toggleTheme;
+window.applyTheme = applyTheme;

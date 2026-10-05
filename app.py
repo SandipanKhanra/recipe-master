@@ -125,22 +125,28 @@ STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 if not os.path.exists(STATIC_DIR):
     os.makedirs(STATIC_DIR)
 
+NO_CACHE_HEADERS = {
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    "Pragma": "no-cache",
+    "Expires": "0"
+}
+
 # Fallback direct routes so root /style.css, /app.js, /recipes_data.js always work
 @app.get("/style.css")
 def get_root_style():
-    return FileResponse(os.path.join(STATIC_DIR, "style.css"), media_type="text/css")
+    return FileResponse(os.path.join(STATIC_DIR, "style.css"), media_type="text/css", headers=NO_CACHE_HEADERS)
 
 @app.get("/app.js")
 def get_root_app():
-    return FileResponse(os.path.join(STATIC_DIR, "app.js"), media_type="application/javascript")
+    return FileResponse(os.path.join(STATIC_DIR, "app.js"), media_type="application/javascript", headers=NO_CACHE_HEADERS)
 
 @app.get("/recipes_data.js")
 def get_root_recipes_data():
-    return FileResponse(os.path.join(STATIC_DIR, "recipes_data.js"), media_type="application/javascript")
+    return FileResponse(os.path.join(STATIC_DIR, "recipes_data.js"), media_type="application/javascript", headers=NO_CACHE_HEADERS)
 
 @app.get("/translations.js")
 def get_root_translations():
-    return FileResponse(os.path.join(STATIC_DIR, "translations.js"), media_type="application/javascript")
+    return FileResponse(os.path.join(STATIC_DIR, "translations.js"), media_type="application/javascript", headers=NO_CACHE_HEADERS)
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
@@ -149,7 +155,8 @@ def index():
     index_file = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_file):
         with open(index_file, "r", encoding="utf-8") as f:
-            return f.read()
+            content = f.read()
+        return HTMLResponse(content=content, headers=NO_CACHE_HEADERS)
     return "<h1>Recipe Master API is running. UI loading...</h1>"
 
 if __name__ == "__main__":

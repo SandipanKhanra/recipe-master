@@ -38,6 +38,11 @@
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 
+:root[data-theme="dark"],
+html[data-theme="dark"],
+html.dark,
+body[data-theme="dark"],
+body.dark-theme,
 [data-theme="dark"] {
   /* Dark Colors & Palette */
   --bg-app: #0B0F19;
@@ -77,7 +82,7 @@
 
 body {
   font-family: var(--font-main);
-  background-color: #F8FAFC;
+  background-color: var(--bg-app);
   background-image:
     radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 45%),
     radial-gradient(at 100% 0%, rgba(13, 148, 136, 0.08) 0px, transparent 45%),
@@ -205,6 +210,9 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 25;
 }
 
 .lang-selector-box {
@@ -216,6 +224,7 @@ body {
   border-radius: var(--radius-md);
   padding: 6px 12px;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .lang-selector-box:hover,
@@ -253,29 +262,40 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: var(--radius-md);
   background: var(--bg-subtle);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   color: var(--text-main);
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   line-height: 1;
   user-select: none;
   flex-shrink: 0;
+  position: relative;
+  z-index: 25;
 }
 
 .theme-toggle-btn:hover {
   background: var(--bg-surface);
   border-color: var(--primary);
-  transform: translateY(-1px) scale(1.05);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px) scale(1.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .theme-toggle-btn:active {
-  transform: translateY(0) scale(0.96);
+  transform: translateY(0) scale(0.95);
+}
+
+.theme-toggle-icon {
+  display: inline-block;
+  font-size: 1.25rem;
+  line-height: 1;
+  pointer-events: none;
 }
 
 /* Google Translate Frame & Overlays Suppression */
@@ -1549,21 +1569,28 @@ body {
    ========================================================== */
 
 /* Body Dark Gradient Mesh */
-[data-theme="dark"] body {
-  background-color: #0B0F19;
+html[data-theme="dark"] body,
+body[data-theme="dark"],
+[data-theme="dark"] body,
+html.dark body,
+body.dark-theme {
+  background-color: #0B0F19 !important;
   background-image:
     radial-gradient(at 0% 0%, rgba(20, 184, 166, 0.12) 0px, transparent 50%),
     radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.08) 0px, transparent 50%),
     radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.07) 0px, transparent 60%),
-    linear-gradient(180deg, #0B0F19 0%, #111827 100%);
+    linear-gradient(180deg, #0B0F19 0%, #111827 100%) !important;
   background-attachment: fixed;
   color: var(--text-main);
 }
 
 /* Header & Navigation */
-[data-theme="dark"] .app-header {
-  background: rgba(11, 15, 25, 0.9);
-  border-bottom-color: rgba(34, 48, 70, 0.85);
+html[data-theme="dark"] .app-header,
+[data-theme="dark"] .app-header,
+html.dark .app-header,
+body.dark-theme .app-header {
+  background: rgba(11, 15, 25, 0.92) !important;
+  border-bottom-color: rgba(34, 48, 70, 0.85) !important;
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
 }
 
@@ -1629,9 +1656,12 @@ body {
 }
 
 /* Sticky Controls Section Dock */
-[data-theme="dark"] .controls-section {
-  background: linear-gradient(180deg, rgba(17, 24, 39, 0.95) 0%, rgba(13, 19, 33, 0.92) 100%);
-  border-color: rgba(36, 50, 72, 0.85);
+html[data-theme="dark"] .controls-section,
+[data-theme="dark"] .controls-section,
+html.dark .controls-section,
+body.dark-theme .controls-section {
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.95) 0%, rgba(13, 19, 33, 0.92) 100%) !important;
+  border-color: rgba(36, 50, 72, 0.85) !important;
   box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
 }
 
@@ -2397,6 +2427,24 @@ body {
 }
 
 /* Responsive Breakpoints */
+@media (max-width: 1080px) {
+  .header-inner {
+    height: auto;
+    padding: 10px 0;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-actions {
+    margin-left: auto;
+  }
+  .header-stats {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+}
+
 @media (max-width: 768px) {
   .app-header {
     position: relative;

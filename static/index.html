@@ -8,15 +8,80 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2.2">
   <script>
     (function() {
-      const savedTheme = localStorage.getItem('recipe_theme');
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-        document.documentElement.setAttribute('data-theme', 'dark');
+      function getInitialTheme() {
+        try {
+          const saved = localStorage.getItem('recipe_theme');
+          if (saved === 'dark' || saved === 'light') return saved;
+        } catch (e) {}
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      }
+
+      const initialTheme = getInitialTheme();
+      document.documentElement.setAttribute('data-theme', initialTheme);
+      document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+
+      // Expose globally so button clicks always work even if other scripts are loading
+      window.toggleTheme = function() {
+        const isCurrentDark = document.documentElement.getAttribute('data-theme') === 'dark'
+          || document.documentElement.classList.contains('dark')
+          || (document.body && document.body.getAttribute('data-theme') === 'dark');
+        const nextTheme = isCurrentDark ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        document.documentElement.classList.toggle('dark', nextTheme === 'dark');
+        if (document.body) {
+          document.body.setAttribute('data-theme', nextTheme);
+          document.body.classList.toggle('dark-theme', nextTheme === 'dark');
+        }
+
+        try {
+          localStorage.setItem('recipe_theme', nextTheme);
+        } catch (e) {}
+
+        const icon = document.getElementById('themeToggleIcon');
+        if (icon) {
+          icon.textContent = (nextTheme === 'dark') ? '☀️' : '🌙';
+        }
+
+        const btn = document.getElementById('themeToggleBtn');
+        if (btn) {
+          btn.title = (nextTheme === 'dark') ? 'Switch to Light Theme' : 'Switch to Dark Theme';
+          btn.setAttribute('aria-label', (nextTheme === 'dark') ? 'Switch to Light Theme' : 'Switch to Dark Theme');
+        }
+
+        if (typeof showToast === 'function') {
+          showToast(nextTheme === 'dark' ? '🌙 Dark theme enabled' : '☀️ Light theme enabled');
+        }
+      };
+
+      // Sync button icon as soon as DOM element is present
+      function syncThemeState() {
+        const current = document.documentElement.getAttribute('data-theme') || initialTheme;
+        const icon = document.getElementById('themeToggleIcon');
+        if (icon) {
+          icon.textContent = (current === 'dark') ? '☀️' : '🌙';
+        }
+        const btn = document.getElementById('themeToggleBtn');
+        if (btn) {
+          btn.title = (current === 'dark') ? 'Switch to Light Theme' : 'Switch to Dark Theme';
+          btn.setAttribute('aria-label', (current === 'dark') ? 'Switch to Light Theme' : 'Switch to Dark Theme');
+        }
+        if (document.body) {
+          document.body.setAttribute('data-theme', current);
+          document.body.classList.toggle('dark-theme', current === 'dark');
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', syncThemeState);
       } else {
-        document.documentElement.setAttribute('data-theme', 'light');
+        syncThemeState();
       }
     })();
   </script>
@@ -73,7 +138,7 @@
         </div>
 
         <!-- Dark / Light Theme Toggle -->
-        <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark / Light Theme" aria-label="Toggle Dark or Light Theme">
+        <button id="themeToggleBtn" class="theme-toggle-btn notranslate" translate="no" onclick="toggleTheme()" title="Toggle Dark / Light Theme" aria-label="Toggle Dark or Light Theme">
           <span class="theme-toggle-icon" id="themeToggleIcon">🌙</span>
         </button>
       </div>
@@ -291,8 +356,8 @@
   <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
   <!-- Embedded seed data for instant preview, then main app -->
-  <script src="translations.js"></script>
-  <script src="recipes_data.js"></script>
-  <script src="app.js"></script>
+  <script src="translations.js?v=2.2"></script>
+  <script src="recipes_data.js?v=2.2"></script>
+  <script src="app.js?v=2.2"></script>
 </body>
 </html>
