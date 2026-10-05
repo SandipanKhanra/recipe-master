@@ -138,6 +138,10 @@ def get_root_app():
 def get_root_recipes_data():
     return FileResponse(os.path.join(STATIC_DIR, "recipes_data.js"), media_type="application/javascript")
 
+@app.get("/translations.js")
+def get_root_translations():
+    return FileResponse(os.path.join(STATIC_DIR, "translations.js"), media_type="application/javascript")
+
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 @app.get("/", response_class=HTMLResponse)

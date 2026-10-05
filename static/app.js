@@ -1,11 +1,13 @@
 // Recipe Master Frontend Application Logic
 let allRecipes = [];
+let allCategoryObjects = [];
 let currentCategory = 'all';
 let currentSearch = '';
 let currentSort = 'name_asc';
 let activeRecipe = null;
 let currentScaledYield = null;
 let isOfflineMode = false;
+let currentLanguage = 'en';
 
 // DOM Elements
 const searchInput = document.getElementById('searchInput');
@@ -50,6 +52,7 @@ const toast = document.getElementById('toast');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+  initLanguage();
   // Check if opened via file:// or if seed data is present
   if (window.location.protocol === 'file:') {
     isOfflineMode = true;
@@ -85,14 +88,17 @@ function initOfflineData() {
 }
 
 function renderCategoryChipsFromMap(cats) {
+  const dict = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : {};
+  const allLabel = dict.all_recipes || 'All Recipes';
   const chipsHtml = [
-    `<button class="chip ${currentCategory === 'all' ? 'active' : ''}" data-cat="all">All Recipes <span class="chip-count" id="countAll">${allRecipes.length}</span></button>`
+    `<button class="chip ${currentCategory === 'all' ? 'active' : ''}" data-cat="all">${allLabel} <span class="chip-count" id="countAll">${allRecipes.length}</span></button>`
   ];
 
   Object.entries(cats).sort((a,b) => a[0].localeCompare(b[0])).forEach(([cat, count]) => {
     const active = currentCategory === cat ? 'active' : '';
+    const localizedCat = (typeof getLocalizedCategory === 'function') ? getLocalizedCategory(cat, currentLanguage) : cat;
     chipsHtml.push(
-      `<button class="chip ${active}" data-cat="${cat}">${cat} <span class="chip-count">${count}</span></button>`
+      `<button class="chip ${active}" data-cat="${cat}">${escapeHtml(localizedCat)} <span class="chip-count">${count}</span></button>`
     );
   });
 
@@ -207,6 +213,14 @@ function setupEventListeners() {
     closeRecipeModal();
     openEditModal(activeRecipe);
   });
+
+  // Language Selector Change
+  const langSelect = document.getElementById('langSelect');
+  if (langSelect) {
+    langSelect.addEventListener('change', (e) => {
+      changeLanguage(e.target.value);
+    });
+  }
 }
 
 // Fetch Stats
@@ -232,36 +246,47 @@ async function loadCategories() {
     const res = await fetch('/api/categories');
     if (!res.ok) throw new Error();
     const categories = await res.json();
+    allCategoryObjects = categories;
     
     // Update Datalist in form
     const datalist = document.getElementById('categoryListOptions');
     datalist.innerHTML = categories.map(c => `<option value="${c.category}">`).join('');
 
-    // Render chips
-    const chipsHtml = [
-      `<button class="chip ${currentCategory === 'all' ? 'active' : ''}" data-cat="all">All Recipes <span class="chip-count" id="countAll">${allRecipes.length || '446'}</span></button>`
-    ];
-
-    categories.forEach(c => {
-      const active = currentCategory === c.category ? 'active' : '';
-      chipsHtml.push(
-        `<button class="chip ${active}" data-cat="${c.category}">${c.category} <span class="chip-count">${c.recipe_count}</span></button>`
-      );
-    });
-
-    categoryChips.innerHTML = chipsHtml.join('');
-
-    categoryChips.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        categoryChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        currentCategory = chip.dataset.cat;
-        loadRecipes();
-      });
-    });
+    renderCategoryChips(categories);
   } catch (err) {
     console.warn('Error loading categories from API');
   }
+}
+
+function renderCategoryChips(categories) {
+  const dict = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : {};
+  const allLabel = dict.all_recipes || 'All Recipes';
+  const chipsHtml = [
+    `<button class="chip ${currentCategory === 'all' ? 'active' : ''}" data-cat="all">${allLabel} <span class="chip-count" id="countAll">${allRecipes.length || '446'}</span></button>`
+  ];
+
+  categories.forEach(c => {
+    const active = currentCategory === c.category ? 'active' : '';
+    const localizedCat = (typeof getLocalizedCategory === 'function') ? getLocalizedCategory(c.category, currentLanguage) : c.category;
+    chipsHtml.push(
+      `<button class="chip ${active}" data-cat="${c.category}">${escapeHtml(localizedCat)} <span class="chip-count">${c.recipe_count}</span></button>`
+    );
+  });
+
+  categoryChips.innerHTML = chipsHtml.join('');
+
+  categoryChips.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      categoryChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentCategory = chip.dataset.cat;
+      if (isOfflineMode) {
+        filterAndRenderOffline();
+      } else {
+        loadRecipes();
+      }
+    });
+  });
 }
 
 // Fetch Recipes
@@ -305,6 +330,7 @@ function sortAndRenderRecipes(customList = null) {
 
 // Render Grid
 function renderRecipeGrid(recipes) {
+  const dict = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : {};
   if (recipes.length === 0) {
     recipesGrid.innerHTML = '';
     emptyState.style.display = 'block';
@@ -313,17 +339,21 @@ function renderRecipeGrid(recipes) {
   }
 
   emptyState.style.display = 'none';
-  resultsCount.innerHTML = `Showing <strong>${recipes.length}</strong> recipes ${currentCategory !== 'all' ? `in <em>${currentCategory}</em>` : ''}`;
+  const localizedCatHeader = (typeof getLocalizedCategory === 'function') ? getLocalizedCategory(currentCategory, currentLanguage) : currentCategory;
+  const inCatText = currentCategory !== 'all' ? (dict.in_category ? dict.in_category.replace('{cat}', escapeHtml(localizedCatHeader)) : `in <em>${escapeHtml(localizedCatHeader)}</em>`) : '';
+  const showingText = dict.showing_recipes ? dict.showing_recipes.replace('{count}', recipes.length) : `Showing <strong>${recipes.length}</strong> recipes`;
+  resultsCount.innerHTML = `${showingText} ${inCatText}`;
 
   const cardsHtml = recipes.map(r => {
     const ingCount = r.ingredients_count || (r.ingredients ? r.ingredients.length : 0);
     const cuisineTag = r.cuisine ? `<span class="badge badge-cuisine">${escapeHtml(r.cuisine)}</span>` : '';
+    const localizedCat = (typeof getLocalizedCategory === 'function') ? getLocalizedCategory(r.category, currentLanguage) : r.category;
     
     return `
       <div class="recipe-card" onclick="viewRecipe('${r.id}')">
         <div class="card-top">
           <div class="card-badges">
-            <span class="badge badge-cat">${escapeHtml(r.category)}</span>
+            <span class="badge badge-cat">${escapeHtml(localizedCat)}</span>
             ${cuisineTag}
           </div>
           <h3 class="recipe-title">${escapeHtml(r.title)}</h3>
@@ -331,7 +361,7 @@ function renderRecipeGrid(recipes) {
           <!-- High-Visibility Ingredients Count Badge -->
           <div class="card-metrics-row">
             <span class="ing-count-pill" title="Total Ingredients in this recipe">
-              🌿 <strong>${ingCount} Ingredients</strong>
+              🌿 <strong>${ingCount} ${dict.ingredients || 'Ingredients'}</strong>
             </span>
             <span class="yield-pill" title="Base Yield">
               Yield: ${r.base_yield} ${escapeHtml(r.yield_unit || '')}
@@ -341,10 +371,10 @@ function renderRecipeGrid(recipes) {
 
         <div class="card-footer" onclick="event.stopPropagation()">
           <button class="btn btn-sm btn-card-scale" onclick="viewRecipe('${r.id}')">
-            ⚡ View & Scale
+            ${dict.view_scale || '⚡ View & Scale'}
           </button>
           <button class="btn btn-sm btn-card-pdf" onclick="directPdfDownload('${r.id}', ${r.base_yield})" title="Direct PDF Download">
-            📄 PDF
+            ${dict.pdf || '📄 PDF'}
           </button>
         </div>
       </div>
@@ -374,11 +404,12 @@ async function viewRecipe(recipeId) {
     currentScaledYield = recipe.base_yield || 100;
 
     // Set Modal Header
+    const localizedCat = (typeof getLocalizedCategory === 'function') ? getLocalizedCategory(recipe.category, currentLanguage) : recipe.category;
     document.getElementById('modalRecipeTitle').textContent = recipe.title;
-    document.getElementById('modalRecipeCuisine').textContent = recipe.cuisine ? `Cuisine / Style: ${recipe.cuisine}` : `Category: ${recipe.category}`;
+    document.getElementById('modalRecipeCuisine').textContent = recipe.cuisine ? `Cuisine / Style: ${recipe.cuisine}` : `Category: ${localizedCat}`;
     
     document.getElementById('modalCategoryBadges').innerHTML = `
-      <span class="badge badge-cat">${escapeHtml(recipe.category)}</span>
+      <span class="badge badge-cat">${escapeHtml(localizedCat)}</span>
       ${recipe.cuisine ? `<span class="badge badge-cuisine">${escapeHtml(recipe.cuisine)}</span>` : ''}
     `;
 
@@ -402,8 +433,12 @@ async function viewRecipe(recipeId) {
       const s = i.stage || 'Main';
       stages[s] = (stages[s] || 0) + 1;
     });
-    const stageSummary = Object.entries(stages).map(([stg, cnt]) => `<strong>${cnt}</strong> ${stg}`).join(' • ');
-    heroIngBreakdown.innerHTML = stageSummary ? `Breakdown: ${stageSummary}` : 'All ingredients categorized under Main.';
+    const stageSummary = Object.entries(stages).map(([stg, cnt]) => {
+      const locStg = (typeof getLocalizedStage === 'function') ? getLocalizedStage(stg, currentLanguage) : stg;
+      return `<strong>${cnt}</strong> ${locStg}`;
+    }).join(' • ');
+    const dict = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : {};
+    heroIngBreakdown.innerHTML = stageSummary ? `${dict.breakdown || 'Breakdown:'} ${stageSummary}` : 'All ingredients categorized under Main.';
 
     // Populate Ingredients Table
     applyScaling(recipe.base_yield);
@@ -418,7 +453,7 @@ async function viewRecipe(recipeId) {
         </div>
       `).join('');
     } else {
-      instructionsContent.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">No specific cooking instructions listed. Follow standard kitchen procedures.</p>';
+      instructionsContent.innerHTML = `<p style="color: var(--text-muted); font-style: italic;">${dict.no_instructions || 'No specific cooking instructions listed. Follow standard kitchen procedures.'}</p>`;
     }
 
     recipeModalBackdrop.classList.add('show');
@@ -434,20 +469,22 @@ function applyScaling(targetYield) {
   currentScaledYield = targetYield;
   const baseYield = activeRecipe.base_yield || 100;
   const scaleFactor = targetYield / baseYield;
+  const dict = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : {};
 
-  scaleFactorBanner.innerHTML = `Multiplier: <strong>${scaleFactor.toFixed(2)}x</strong> (Target: ${roundNumber(targetYield, 2)} ${activeRecipe.yield_unit} ÷ Base: ${baseYield} ${activeRecipe.yield_unit})`;
+  scaleFactorBanner.innerHTML = `${dict.multiplier || 'Multiplier:'} <strong>${scaleFactor.toFixed(2)}x</strong> (Target: ${roundNumber(targetYield, 2)} ${activeRecipe.yield_unit} ÷ Base: ${baseYield} ${activeRecipe.yield_unit})`;
 
   const ingredients = activeRecipe.ingredients || [];
   const rowsHtml = ingredients.map((ing, idx) => {
     const baseQty = ing.quantity !== undefined ? ing.quantity : 0;
     const scaledQty = baseQty * scaleFactor;
+    const locStg = (typeof getLocalizedStage === 'function') ? getLocalizedStage(ing.stage || 'Main', currentLanguage) : (ing.stage || 'Main');
     
     return `
       <tr id="ingRow_${idx}">
         <td style="text-align: center;">
-          <input type="checkbox" class="ing-prep-check" onchange="toggleRowCheck(${idx}, this.checked)" title="Check when prepped" />
+          <input type="checkbox" class="ing-prep-check" onchange="toggleRowCheck(${idx}, this.checked)" title="${dict.check_when_prepped || 'Check when prepped'}" />
         </td>
-        <td><span class="ing-stage-tag">${escapeHtml(ing.stage || 'Main')}</span></td>
+        <td><span class="ing-stage-tag">${escapeHtml(locStg)}</span></td>
         <td><strong>${escapeHtml(ing.name)}</strong></td>
         <td style="text-align: right;" class="qty-base">${formatQty(baseQty)}</td>
         <td style="text-align: right;" class="qty-val">${formatQty(scaledQty)}</td>
@@ -749,4 +786,122 @@ function debounce(func, wait) {
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
   };
+}
+
+// Language Support & Auto-Translation
+function initLanguage() {
+  const savedLang = localStorage.getItem('recipe_language') || 'en';
+  currentLanguage = savedLang;
+  const langSelect = document.getElementById('langSelect');
+  if (langSelect) {
+    langSelect.value = savedLang;
+  }
+  if (savedLang !== 'en') {
+    applyDictionary(savedLang);
+    document.cookie = `googtrans=/en/${savedLang}; path=/;`;
+    document.cookie = `googtrans=/en/${savedLang}; domain=${window.location.hostname}; path=/;`;
+    syncGoogleTranslate(savedLang);
+  }
+}
+
+function changeLanguage(langCode) {
+  currentLanguage = langCode;
+  localStorage.setItem('recipe_language', langCode);
+
+  // 1. Instant native dictionary UI update
+  applyDictionary(langCode);
+
+  // 2. Set / clear Google Translate cookie
+  if (langCode === 'en') {
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=' + window.location.hostname + '; path=/;';
+    document.cookie = 'googtrans=/en/en; path=/;';
+  } else {
+    document.cookie = `googtrans=/en/${langCode}; path=/;`;
+    document.cookie = `googtrans=/en/${langCode}; domain=${window.location.hostname}; path=/;`;
+  }
+
+  // 3. Trigger Google Translate combo element
+  syncGoogleTranslate(langCode);
+
+  // 4. Re-render categories & recipe cards
+  if (allCategoryObjects && allCategoryObjects.length > 0) {
+    renderCategoryChips(allCategoryObjects);
+  } else if (isOfflineMode) {
+    initOfflineData();
+  }
+
+  if (isOfflineMode) {
+    filterAndRenderOffline();
+  } else {
+    sortAndRenderRecipes();
+  }
+
+  // 5. If modal is open, re-render its localized parts
+  if (activeRecipe) {
+    const localizedCat = (typeof getLocalizedCategory === 'function') ? getLocalizedCategory(activeRecipe.category, currentLanguage) : activeRecipe.category;
+    document.getElementById('modalRecipeCuisine').textContent = activeRecipe.cuisine ? `Cuisine / Style: ${activeRecipe.cuisine}` : `Category: ${localizedCat}`;
+    document.getElementById('modalCategoryBadges').innerHTML = `
+      <span class="badge badge-cat">${escapeHtml(localizedCat)}</span>
+      ${activeRecipe.cuisine ? `<span class="badge badge-cuisine">${escapeHtml(activeRecipe.cuisine)}</span>` : ''}
+    `;
+    applyScaling(currentScaledYield || activeRecipe.base_yield || 100);
+  }
+
+  showToast(`Language set to ${getLanguageName(langCode)}`);
+}
+
+function getLanguageName(code) {
+  const map = {
+    en: 'English',
+    hi: 'हिन्दी (Hindi)',
+    bn: 'বাংলা (Bengali)',
+    gu: 'ગુજરાતી (Gujarati)',
+    mr: 'मराठी (Marathi)',
+    ta: 'தமிழ் (Tamil)',
+    te: 'తెలుగు (Telugu)',
+    kn: 'ಕನ್ನಡ (Kannada)',
+    pa: 'ਪੰਜਾਬੀ (Punjabi)',
+    es: 'Español',
+    fr: 'Français'
+  };
+  return map[code] || code;
+}
+
+function applyDictionary(lang) {
+  if (typeof UI_TRANSLATIONS === 'undefined') return;
+  const dict = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS['en'];
+
+  // Update elements with data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) {
+      el.textContent = dict[key];
+    }
+  });
+
+  // Update elements with data-i18n-placeholder
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (dict[key]) {
+      el.placeholder = dict[key];
+    }
+  });
+}
+
+function syncGoogleTranslate(lang) {
+  let attempts = 0;
+  const interval = setInterval(() => {
+    attempts++;
+    const teCombo = document.querySelector('.goog-te-combo');
+    if (teCombo) {
+      if (teCombo.value !== lang) {
+        teCombo.value = (lang === 'en') ? 'en' : lang;
+        teCombo.dispatchEvent(new Event('change'));
+      }
+      clearInterval(interval);
+    } else if (attempts > 20) {
+      clearInterval(interval);
+    }
+  }, 250);
 }

@@ -30,22 +30,40 @@
       <div class="header-stats" id="headerStats">
         <div class="stat-pill">
           <span class="stat-num" id="statRecipes">446</span>
-          <span class="stat-lbl">Recipes</span>
+          <span class="stat-lbl" data-i18n="recipes">Recipes</span>
         </div>
         <div class="stat-pill">
           <span class="stat-num" id="statCategories">19</span>
-          <span class="stat-lbl">Categories</span>
+          <span class="stat-lbl" data-i18n="categories">Categories</span>
         </div>
         <div class="stat-pill">
           <span class="stat-num" id="statIngredients">6,571</span>
-          <span class="stat-lbl">Ingredients</span>
+          <span class="stat-lbl" data-i18n="ingredients">Ingredients</span>
         </div>
       </div>
 
       <div class="header-actions">
+        <!-- Multi-Language Selector with Auto-Translation -->
+        <div class="lang-selector-box" title="Select Language / भाषा चुनें / ভাষা নির্বাচন করুন">
+          <span class="lang-globe-icon">🌐</span>
+          <select id="langSelect" class="lang-dropdown" aria-label="Select Language">
+            <option value="en">English</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="gu">ગુજરાતી (Gujarati)</option>
+            <option value="mr">मराठी (Marathi)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="te">తెలుగు (Telugu)</option>
+            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+            <option value="es">Español (Spanish)</option>
+            <option value="fr">Français (French)</option>
+          </select>
+        </div>
+
         <button class="btn btn-primary" id="btnOpenCreate">
           <span class="btn-icon">＋</span>
-          <span>Create New Recipe</span>
+          <span data-i18n="create_recipe">Create New Recipe</span>
         </button>
       </div>
     </div>
@@ -59,17 +77,17 @@
       <div class="search-sort-bar">
         <div class="search-wrapper">
           <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" placeholder="Search by recipe name, ingredient (e.g. Toor Dal, Paneer), or cuisine..." />
+          <input type="text" id="searchInput" placeholder="Search by recipe name, ingredient (e.g. Toor Dal, Paneer), or cuisine..." data-i18n-placeholder="search_placeholder" />
           <button id="btnClearSearch" class="btn-clear" style="display:none;">✕</button>
         </div>
         <div class="sort-wrapper">
-          <label for="sortSelect">Sort:</label>
+          <label for="sortSelect" data-i18n="sort_label">Sort:</label>
           <select id="sortSelect">
-            <option value="name_asc">Name (A-Z)</option>
-            <option value="name_desc">Name (Z-A)</option>
-            <option value="ing_desc">Ingredients Count (High to Low)</option>
-            <option value="ing_asc">Ingredients Count (Low to High)</option>
-            <option value="yield_desc">Yield (High to Low)</option>
+            <option value="name_asc" data-i18n="sort_name_asc">Name (A-Z)</option>
+            <option value="name_desc" data-i18n="sort_name_desc">Name (Z-A)</option>
+            <option value="ing_desc" data-i18n="sort_ing_desc">Ingredients Count (High to Low)</option>
+            <option value="ing_asc" data-i18n="sort_ing_asc">Ingredients Count (Low to High)</option>
+            <option value="yield_desc" data-i18n="sort_yield_desc">Yield (High to Low)</option>
           </select>
         </div>
       </div>
@@ -77,7 +95,7 @@
       <!-- Category Filter Chips -->
       <div class="category-chips-wrapper">
         <div class="category-chips" id="categoryChips">
-          <button class="chip active" data-cat="all">All Recipes <span class="chip-count" id="countAll">446</span></button>
+          <button class="chip active" data-cat="all"><span data-i18n="all_recipes">All Recipes</span> <span class="chip-count" id="countAll">446</span></button>
         </div>
       </div>
     </section>
@@ -122,17 +140,17 @@
         <div class="ing-count-hero" id="ingCountHero">
           <div class="hero-count-box">
             <span class="hero-count-val" id="heroIngCount">14</span>
-            <span class="hero-count-lbl">Total Ingredients</span>
+            <span class="hero-count-lbl" data-i18n="total_ingredients">Total Ingredients</span>
           </div>
           <div class="hero-breakdown" id="heroIngBreakdown">
             <!-- Stage breakdown e.g. Main (6) • Chaunk (4) • Paste (4) -->
           </div>
           <div class="hero-action-buttons">
             <button class="btn btn-pdf" id="btnDownloadPdf">
-              <span>📄 Download PDF</span>
+              <span data-i18n="download_pdf">📄 Download PDF</span>
             </button>
             <button class="btn btn-outline" id="btnPrintRecipe">
-              <span>🖨️ Print</span>
+              <span data-i18n="print_ticket">🖨️ Print</span>
             </button>
           </div>
         </div>
@@ -141,8 +159,8 @@
         <div class="scaler-panel">
           <div class="scaler-header">
             <div class="scaler-title-group">
-              <span class="scaler-label">⚡ Dynamic Yield Scaler</span>
-              <span class="scaler-formula-note">Formula: Scaled Qty = Base Qty × (Target ÷ Base Yield)</span>
+              <span class="scaler-label" data-i18n="dynamic_scaler">⚡ Dynamic Yield Scaler</span>
+              <span class="scaler-formula-note" data-i18n="scaler_formula">Formula: Scaled Qty = Base Qty × (Target ÷ Base Yield)</span>
             </div>
             <div class="base-yield-badge" id="modalBaseYieldBadge">
               Base: 100 L
@@ -151,7 +169,7 @@
 
           <div class="scaler-controls-row">
             <div class="yield-input-group">
-              <label for="targetYieldInput">Target Yield:</label>
+              <label for="targetYieldInput" data-i18n="target_yield">Target Yield:</label>
               <div class="input-with-unit">
                 <input type="number" id="targetYieldInput" min="0.1" step="any" value="100" />
                 <span class="unit-tag" id="modalYieldUnit">L</span>
@@ -159,7 +177,7 @@
             </div>
 
             <div class="quick-scale-buttons">
-              <span class="quick-lbl">Quick Scale:</span>
+              <span class="quick-lbl" data-i18n="quick_scale">Quick Scale:</span>
               <button class="btn-scale-chip" data-factor="0.25">0.25x</button>
               <button class="btn-scale-chip" data-factor="0.5">0.5x</button>
               <button class="btn-scale-chip active" data-factor="1.0">1x (Base)</button>
@@ -177,7 +195,7 @@
         <!-- Ingredients Table with Stages -->
         <div class="ingredients-section">
           <div class="section-title-row">
-            <h3 class="section-heading">Ingredients List</h3>
+            <h3 class="section-heading" data-i18n="ingredients_list">Ingredients List</h3>
             <span class="count-tag" id="ingTableCountBadge">14 Items</span>
           </div>
 
@@ -185,13 +203,13 @@
             <table class="recipe-table" id="ingredientsTable">
               <thead>
                 <tr>
-                  <th style="width: 44px; text-align: center;">Prep</th>
-                  <th style="width: 100px;">Stage</th>
-                  <th>Ingredient Name</th>
-                  <th style="width: 110px; text-align: right;">Base Qty</th>
-                  <th style="width: 120px; text-align: right;">Scaled Qty</th>
-                  <th style="width: 60px;">Unit</th>
-                  <th>Preparation / Cooking Notes</th>
+                  <th style="width: 44px; text-align: center;" data-i18n="prep">Prep</th>
+                  <th style="width: 100px;" data-i18n="stage">Stage</th>
+                  <th data-i18n="ingredient_name">Ingredient Name</th>
+                  <th style="width: 110px; text-align: right;" data-i18n="base_qty">Base Qty</th>
+                  <th style="width: 120px; text-align: right;" data-i18n="scaled_qty">Scaled Qty</th>
+                  <th style="width: 60px;" data-i18n="unit">Unit</th>
+                  <th data-i18n="notes">Preparation / Cooking Notes</th>
                 </tr>
               </thead>
               <tbody id="ingredientsTableBody">
@@ -203,7 +221,7 @@
 
         <!-- Cooking Instructions & Method -->
         <div class="instructions-section">
-          <h3 class="section-heading">Method & Cooking Instructions</h3>
+          <h3 class="section-heading" data-i18n="cooking_instructions">Method & Cooking Instructions</h3>
           <div class="instructions-content" id="instructionsContent">
             <!-- Step by step instructions -->
           </div>
@@ -213,8 +231,8 @@
 
       <div class="modal-footer">
         <div class="footer-right" style="margin-left: auto;">
-          <button class="btn btn-secondary" id="btnEditRecipe">✏️ Edit Recipe</button>
-          <button class="btn btn-pdf" id="btnModalPdfFooter">📄 Download Scaled PDF</button>
+          <button class="btn btn-secondary" id="btnEditRecipe" data-i18n="edit_recipe">✏️ Edit Recipe</button>
+          <button class="btn btn-pdf" id="btnModalPdfFooter" data-i18n="download_scaled_pdf">📄 Download Scaled PDF</button>
         </div>
       </div>
     </div>
@@ -225,7 +243,7 @@
     <div class="modal-card modal-lg" id="editModalCard">
       <div class="modal-header">
         <div class="modal-title-wrap">
-          <h2 class="modal-title" id="editModalTitle">Create New Recipe</h2>
+          <h2 class="modal-title" id="editModalTitle" data-i18n="modal_create_title">Create New Recipe</h2>
           <div class="modal-subtitle">Add full recipe details with dynamic ingredients list and yield</div>
         </div>
         <button class="btn-close" id="btnCloseEditModal">✕</button>
@@ -238,12 +256,12 @@
           <!-- Basic Info Form -->
           <div class="form-grid">
             <div class="form-group form-span-2">
-              <label for="formTitle">Recipe Title *</label>
+              <label for="formTitle" data-i18n="form_title">Recipe Title *</label>
               <input type="text" id="formTitle" required placeholder="e.g. Special Kashmiri Dum Aloo" />
             </div>
 
             <div class="form-group">
-              <label for="formCategory">Category *</label>
+              <label for="formCategory" data-i18n="form_category">Category *</label>
               <input list="categoryListOptions" id="formCategory" required placeholder="Select or type category..." />
               <datalist id="categoryListOptions">
                 <!-- Dynamically populated categories -->
@@ -251,17 +269,17 @@
             </div>
 
             <div class="form-group">
-              <label for="formCuisine">Cuisine / Style / Author</label>
+              <label for="formCuisine" data-i18n="form_cuisine">Cuisine / Style / Author</label>
               <input type="text" id="formCuisine" placeholder="e.g. North Indian / HG Govinda P" />
             </div>
 
             <div class="form-group">
-              <label for="formBaseYield">Base Yield *</label>
+              <label for="formBaseYield" data-i18n="form_base_yield">Base Yield *</label>
               <input type="number" id="formBaseYield" required min="0.1" step="any" value="100" />
             </div>
 
             <div class="form-group">
-              <label for="formYieldUnit">Yield Unit *</label>
+              <label for="formYieldUnit" data-i18n="form_yield_unit">Yield Unit *</label>
               <select id="formYieldUnit">
                 <option value="L">L (Liters)</option>
                 <option value="Kg">Kg (Kilograms)</option>
@@ -277,11 +295,11 @@
           <div class="form-ingredients-section">
             <div class="form-ing-header">
               <div class="form-ing-title-group">
-                <h3 class="section-heading">Ingredients List</h3>
+                <h3 class="section-heading" data-i18n="ingredients_list">Ingredients List</h3>
                 <span class="live-counter-pill" id="liveFormIngCount">Ingredients Count: 0</span>
               </div>
               <button type="button" class="btn btn-secondary btn-sm" onclick="addIngredientRow()">
-                ＋ Add Ingredient Row
+                <span data-i18n="add_row">＋ Add Ingredient Row</span>
               </button>
             </div>
 
@@ -289,11 +307,11 @@
               <table class="form-ing-table" id="formIngTable">
                 <thead>
                   <tr>
-                    <th style="width: 120px;">Stage</th>
-                    <th>Ingredient Name *</th>
-                    <th style="width: 100px;">Base Qty</th>
-                    <th style="width: 90px;">Unit</th>
-                    <th>Preparation Notes</th>
+                    <th style="width: 120px;" data-i18n="stage">Stage</th>
+                    <th data-i18n="ingredient_name">Ingredient Name *</th>
+                    <th style="width: 100px;" data-i18n="base_qty">Base Qty</th>
+                    <th style="width: 90px;" data-i18n="unit">Unit</th>
+                    <th data-i18n="notes">Preparation Notes</th>
                     <th style="width: 44px;"></th>
                   </tr>
                 </thead>
@@ -306,7 +324,7 @@
 
           <!-- Cooking Instructions -->
           <div class="form-group" style="margin-top: 20px;">
-            <label for="formInstructions">Cooking Instructions / Method (One step per line)</label>
+            <label for="formInstructions" data-i18n="cooking_instructions">Cooking Instructions / Method (One step per line)</label>
             <textarea id="formInstructions" rows="5" placeholder="1. Heat oil and add cumin seeds, mustard seeds.
 2. Add ginger paste and spices, saute well.
 3. Pour water and simmer for 20 minutes."></textarea>
@@ -315,8 +333,8 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" id="btnCancelEdit">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="btnSubmitRecipe">Save Recipe</button>
+          <button type="button" class="btn btn-secondary" id="btnCancelEdit" data-i18n="cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitRecipe" data-i18n="save_recipe">Save Recipe</button>
         </div>
       </form>
     </div>
@@ -325,7 +343,21 @@
   <!-- Toast Notification -->
   <div class="toast" id="toast">Recipe saved successfully!</div>
 
+  <!-- Hidden Google Translate Element for Auto-Translation -->
+  <div id="google_translate_element" style="display:none;" aria-hidden="true"></div>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,hi,bn,gu,mr,ta,te,kn,pa,es,fr',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
   <!-- Embedded seed data for instant preview, then main app -->
+  <script src="translations.js"></script>
   <script src="recipes_data.js"></script>
   <script src="app.js"></script>
 </body>
