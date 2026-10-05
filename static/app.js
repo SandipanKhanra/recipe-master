@@ -58,6 +58,7 @@ const toast = document.getElementById('toast');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   initLanguage();
   // Check if opened via file:// or if seed data is present
   if (window.location.protocol === 'file:') {
@@ -223,6 +224,12 @@ function setupEventListeners() {
     langSelect.addEventListener('change', (e) => {
       changeLanguage(e.target.value);
     });
+  }
+
+  // Theme Toggle (Dark / Light)
+  const themeToggleBtn = document.getElementById('themeToggleBtn');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleTheme);
   }
 }
 
@@ -849,4 +856,30 @@ function syncGoogleTranslate(lang) {
       clearInterval(interval);
     }
   }, 250);
+}
+
+// Dark / Light Theme Handling
+function initTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  updateThemeIcon(currentTheme);
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  try {
+    localStorage.setItem('recipe_theme', newTheme);
+  } catch (e) {
+    console.warn('Could not save theme to localStorage:', e);
+  }
+  updateThemeIcon(newTheme);
+  showToast(newTheme === 'dark' ? '🌙 Dark theme enabled' : '☀️ Light theme enabled');
+}
+
+function updateThemeIcon(theme) {
+  const icon = document.getElementById('themeToggleIcon');
+  if (icon) {
+    icon.textContent = (theme === 'dark') ? '☀️' : '🌙';
+  }
 }

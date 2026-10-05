@@ -38,6 +38,37 @@
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 
+[data-theme="dark"] {
+  /* Dark Colors & Palette */
+  --bg-app: #0B0F19;
+  --bg-surface: #111827;
+  --bg-subtle: #192438;
+  --bg-muted: #273549;
+
+  --primary: #14B8A6;         /* Bright Luminous Teal */
+  --primary-hover: #2DD4BF;
+  --primary-light: rgba(20, 184, 166, 0.22);
+  --primary-subtle: rgba(20, 184, 166, 0.12);
+
+  --accent: #FBBF24;          /* Warm Amber */
+  --accent-light: rgba(251, 191, 36, 0.2);
+
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-light: #64748B;
+
+  --border: #223046;
+  --border-focus: #14B8A6;
+
+  --danger: #F87171;
+  --danger-light: rgba(248, 113, 113, 0.2);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.45), 0 2px 4px -2px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.55), 0 4px 6px -4px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.45);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -215,6 +246,36 @@ body {
   background-color: var(--bg-surface);
   color: var(--text-main);
   padding: 6px;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 1.15rem;
+  line-height: 1;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg-surface);
+  border-color: var(--primary);
+  transform: translateY(-1px) scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.theme-toggle-btn:active {
+  transform: translateY(0) scale(0.96);
 }
 
 /* Google Translate Frame & Overlays Suppression */
@@ -1483,6 +1544,550 @@ body {
   }
 }
 
+/* ==========================================================
+   MODERN DARK THEME STYLING
+   ========================================================== */
+
+/* Body Dark Gradient Mesh */
+[data-theme="dark"] body {
+  background-color: #0B0F19;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(20, 184, 166, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.07) 0px, transparent 60%),
+    linear-gradient(180deg, #0B0F19 0%, #111827 100%);
+  background-attachment: fixed;
+  color: var(--text-main);
+}
+
+/* Header & Navigation */
+[data-theme="dark"] .app-header {
+  background: rgba(11, 15, 25, 0.9);
+  border-bottom-color: rgba(34, 48, 70, 0.85);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .brand-title {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .brand-tag {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .veg-badge-indicator {
+  border-color: #22C55E;
+  background-color: rgba(34, 197, 94, 0.12);
+}
+
+[data-theme="dark"] .stat-pill {
+  background-color: #192438;
+  border-color: #27374E;
+}
+
+[data-theme="dark"] .stat-num {
+  color: #2DD4BF;
+}
+
+[data-theme="dark"] .stat-lbl {
+  color: #94A3B8;
+}
+
+/* Language Selector & Theme Toggle */
+[data-theme="dark"] .lang-selector-box {
+  background-color: #192438;
+  border-color: #27374E;
+}
+
+[data-theme="dark"] .lang-selector-box:hover,
+[data-theme="dark"] .lang-selector-box:focus-within {
+  border-color: var(--primary);
+  background-color: #202F48;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.22);
+}
+
+[data-theme="dark"] .lang-dropdown {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .lang-dropdown option {
+  background-color: #111827;
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .theme-toggle-btn {
+  background-color: #192438;
+  border-color: #27374E;
+  color: #F8FAFC;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover {
+  background-color: #202F48;
+  border-color: var(--primary);
+  box-shadow: 0 0 14px rgba(20, 184, 166, 0.35);
+}
+
+/* Sticky Controls Section Dock */
+[data-theme="dark"] .controls-section {
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.95) 0%, rgba(13, 19, 33, 0.92) 100%);
+  border-color: rgba(36, 50, 72, 0.85);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .search-wrapper input {
+  background: linear-gradient(180deg, #131C2E 0%, #0F172A 100%);
+  border-color: #26354D;
+  color: #F8FAFC;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .search-wrapper input:focus {
+  background: #172338;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.25), inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .search-wrapper input::placeholder {
+  color: #64748B;
+}
+
+[data-theme="dark"] .btn-clear {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .sort-wrapper {
+  background: linear-gradient(180deg, #131C2E 0%, #0F172A 100%);
+  border-color: #26354D;
+  color: #94A3B8;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .sort-wrapper select {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .sort-wrapper select option {
+  background-color: #111827;
+  color: #F8FAFC;
+}
+
+/* Category Chips */
+[data-theme="dark"] .chip {
+  background: linear-gradient(145deg, #172235 0%, #121A2A 100%);
+  border-color: #26364E;
+  color: #94A3B8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .chip:hover {
+  background: linear-gradient(145deg, #1C2D44 0%, #152438 100%);
+  border-color: rgba(20, 184, 166, 0.5);
+  color: #2DD4BF;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.22);
+}
+
+[data-theme="dark"] .chip.active {
+  background: linear-gradient(135deg, #0D9488 0%, #059669 100%);
+  border-color: #14B8A6;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(20, 184, 166, 0.38);
+}
+
+[data-theme="dark"] .chip-count {
+  background: rgba(0, 0, 0, 0.35);
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .chip.active .chip-count {
+  background: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+}
+
+/* Results Header */
+[data-theme="dark"] .results-count {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .results-legend .legend-badge {
+  background: rgba(245, 158, 11, 0.18);
+  color: #FCD34D;
+}
+
+/* Recipe Cards */
+[data-theme="dark"] .recipe-card {
+  background: linear-gradient(145deg, #141E30 0%, #101827 60%, #0B1C28 100%);
+  border-color: rgba(38, 54, 76, 0.85);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .recipe-card::before {
+  background: linear-gradient(90deg, #10B981 0%, #14B8A6 50%, #059669 100%);
+}
+
+[data-theme="dark"] .recipe-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -4px rgba(0, 0, 0, 0.6), 0 0 20px rgba(20, 184, 166, 0.25);
+  border-color: rgba(20, 184, 166, 0.45);
+}
+
+[data-theme="dark"] .recipe-title {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .badge-cat {
+  background: linear-gradient(135deg, #1A2536 0%, #111827 100%);
+  color: #94A3B8;
+  border-color: #27374E;
+}
+
+[data-theme="dark"] .badge-cuisine {
+  background: linear-gradient(135deg, #1A243B 0%, #151D33 100%);
+  color: #60A5FA;
+  border-color: #1E3A8A;
+}
+
+[data-theme="dark"] .ing-count-pill {
+  background: linear-gradient(135deg, #064E3B 0%, #065F46 100%);
+  color: #A7F3D0;
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .yield-pill {
+  background: linear-gradient(135deg, #1A2536 0%, #111827 100%);
+  color: #94A3B8;
+  border-color: #27374E;
+}
+
+[data-theme="dark"] .card-footer {
+  border-top-color: #202D40;
+}
+
+[data-theme="dark"] .btn-card-scale {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.16) 0%, rgba(13, 148, 136, 0.26) 100%);
+  color: #2DD4BF;
+  border-color: rgba(20, 184, 166, 0.4);
+}
+
+[data-theme="dark"] .btn-card-scale:hover {
+  background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+  color: #042F2E;
+  font-weight: 700;
+  border-color: #14B8A6;
+  box-shadow: 0 4px 14px rgba(20, 184, 166, 0.35);
+}
+
+[data-theme="dark"] .btn-card-pdf {
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.16) 0%, rgba(190, 18, 60, 0.26) 100%);
+  color: #FB7185;
+  border-color: rgba(225, 29, 72, 0.4);
+}
+
+[data-theme="dark"] .btn-card-pdf:hover {
+  background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
+  color: #FFFFFF;
+  border-color: #FB7185;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
+}
+
+[data-theme="dark"] .btn-card-search {
+  background-color: #192438;
+  border-color: #27374E;
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .btn-card-search:hover {
+  background-color: #312E81;
+  border-color: #6366F1;
+  color: #C7D2FE;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+/* Pagination Section */
+[data-theme="dark"] .pagination-section {
+  background: linear-gradient(180deg, #141E30 0%, #0E1624 100%);
+  border-color: #24354C;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .pagination-info {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .page-size-selector {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .page-size-selector select {
+  background: linear-gradient(180deg, #172338 0%, #111A28 100%);
+  border-color: #26354D;
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .page-size-selector select option {
+  background-color: #111827;
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .btn-page {
+  background: linear-gradient(180deg, #192438 0%, #121A28 100%);
+  border-color: #27374E;
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .btn-page:hover:not(:disabled) {
+  background: linear-gradient(135deg, #13333F 0%, #0E423B 100%);
+  border-color: #14B8A6;
+  color: #2DD4BF;
+  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.25);
+}
+
+[data-theme="dark"] .btn-page.active {
+  background: linear-gradient(135deg, #0D9488 0%, #059669 100%);
+  border-color: #14B8A6;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
+}
+
+[data-theme="dark"] .btn-page:disabled {
+  background: #0F172A;
+  border-color: #1E293B;
+  color: #475569;
+  opacity: 0.35;
+}
+
+[data-theme="dark"] .page-ellipsis {
+  color: #64748B;
+}
+
+/* Modals & Scaler */
+[data-theme="dark"] .modal-backdrop {
+  background: rgba(3, 7, 18, 0.75);
+}
+
+[data-theme="dark"] .modal-card {
+  background: #111827;
+  border: 1px solid #24354C;
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.85);
+}
+
+[data-theme="dark"] .modal-header {
+  border-bottom-color: #1E293B;
+}
+
+[data-theme="dark"] .modal-title {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .modal-subtitle {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .modal-footer {
+  background: #0B0F19;
+  border-top-color: #1E293B;
+}
+
+[data-theme="dark"] .btn-close:hover {
+  background-color: #1E293B;
+  color: #F8FAFC;
+}
+
+/* Scaler Panel */
+[data-theme="dark"] .scaler-panel {
+  background: #141E30;
+  border-color: #223247;
+}
+
+[data-theme="dark"] .scaler-label {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .scaler-formula-note {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .base-yield-badge {
+  background: #0F172A;
+  border-color: #223247;
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .yield-input-group label {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .input-with-unit input {
+  background: #0B0F19;
+  border-color: #27374E;
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .input-with-unit input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.25);
+}
+
+[data-theme="dark"] .unit-tag {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .quick-lbl {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .btn-scale-chip {
+  background: #0F172A;
+  border-color: #223247;
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .btn-scale-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+[data-theme="dark"] .btn-scale-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #042F2E;
+  font-weight: 700;
+}
+
+[data-theme="dark"] .scale-factor-banner {
+  background: #0F172A;
+  border-left-color: var(--primary);
+  color: #94A3B8;
+}
+
+/* Tables & Rows */
+[data-theme="dark"] .section-heading {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .table-responsive {
+  border-color: #223247;
+  background: #111827;
+}
+
+[data-theme="dark"] .recipe-table th {
+  background: #141E30;
+  color: #94A3B8;
+  border-bottom-color: #223247;
+}
+
+[data-theme="dark"] .recipe-table td {
+  border-bottom-color: #1A2436;
+}
+
+[data-theme="dark"] .recipe-table tbody tr:nth-child(odd) {
+  background: #111827;
+}
+
+[data-theme="dark"] .recipe-table tbody tr:nth-child(even) {
+  background: #131E2F;
+}
+
+[data-theme="dark"] .recipe-table tbody tr:hover {
+  background: #162C3F !important;
+}
+
+[data-theme="dark"] .ing-stage-tag {
+  background: linear-gradient(135deg, #1A2536 0%, #121A2A 100%);
+  color: #94A3B8;
+  border-color: #27374E;
+}
+
+[data-theme="dark"] .ing-name-label {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .ing-google-link {
+  background: linear-gradient(135deg, #1E1B4B 0%, #282566 100%);
+  border-color: #4F46E5;
+  color: #A5B4FC;
+}
+
+[data-theme="dark"] .ing-google-link:hover {
+  background: linear-gradient(135deg, #4338CA 0%, #4F46E5 100%);
+  border-color: #6366F1;
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+}
+
+[data-theme="dark"] .qty-val {
+  color: #2DD4BF;
+}
+
+[data-theme="dark"] .qty-base {
+  color: #94A3B8;
+}
+
+/* Cooking Instructions */
+[data-theme="dark"] .instructions-content {
+  background: #0B0F19;
+  border: 1px solid #1E293B;
+}
+
+[data-theme="dark"] .instruction-step {
+  background: linear-gradient(90deg, #131C2E 0%, #0F172A 100%);
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .instruction-step:hover {
+  background: linear-gradient(90deg, #17263C 0%, #121C2C 100%);
+  border-color: rgba(20, 184, 166, 0.4);
+}
+
+[data-theme="dark"] .step-num {
+  background: #192438;
+  color: #2DD4BF;
+  border-color: #27374E;
+}
+
+[data-theme="dark"] .step-text {
+  color: #E2E8F0;
+}
+
+/* Empty State */
+[data-theme="dark"] .empty-state {
+  background: #111827;
+  border-color: #223247;
+}
+
+[data-theme="dark"] .empty-state h3 {
+  color: #F8FAFC;
+}
+
+/* Toast */
+[data-theme="dark"] .toast {
+  background: #0B0F19;
+  border: 1px solid #24354C;
+  color: #F8FAFC;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Secondary & Outline Buttons */
+[data-theme="dark"] .btn-secondary {
+  background-color: #192438;
+  color: #F8FAFC;
+  border-color: #27374E;
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  background-color: #22324A;
+}
+
+[data-theme="dark"] .btn-outline {
+  color: #F8FAFC;
+  border-color: #27374E;
+}
+
+[data-theme="dark"] .btn-outline:hover {
+  background-color: #192438;
+}
+
 /* Print Styles */
 @media print {
   @page {
@@ -1514,6 +2119,7 @@ body {
 
   /* Hide app header, background page, navigation and action bars */
   .app-header,
+  .theme-toggle-btn,
   .main-content,
   .controls-section,
   .results-header,
@@ -1708,6 +2314,85 @@ body {
   * {
     page-break-after: auto;
     break-after: auto;
+  }
+
+  /* Enforce clean paper rendering even if dark mode is active */
+  [data-theme="dark"] html,
+  [data-theme="dark"] body {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    background-image: none !important;
+    color: #000000 !important;
+  }
+
+  [data-theme="dark"] .modal-card,
+  [data-theme="dark"] .modal-body,
+  [data-theme="dark"] .modal-header,
+  [data-theme="dark"] .modal-footer {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    background-image: none !important;
+    color: #000000 !important;
+    border-color: #0F172A !important;
+  }
+
+  [data-theme="dark"] .modal-title,
+  [data-theme="dark"] .modal-subtitle,
+  [data-theme="dark"] .section-heading,
+  [data-theme="dark"] .ing-name-label,
+  [data-theme="dark"] .step-text {
+    color: #000000 !important;
+  }
+
+  [data-theme="dark"] .recipe-table,
+  [data-theme="dark"] .recipe-table th,
+  [data-theme="dark"] .recipe-table td,
+  [data-theme="dark"] .recipe-table tr,
+  [data-theme="dark"] .recipe-table tbody tr,
+  [data-theme="dark"] .recipe-table tbody tr:nth-child(even),
+  [data-theme="dark"] .recipe-table tbody tr:nth-child(odd),
+  [data-theme="dark"] .recipe-table tbody tr:hover {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    background-image: none !important;
+    color: #000000 !important;
+    border-bottom: 0.5px solid #E2E8F0 !important;
+  }
+
+  [data-theme="dark"] .recipe-table th {
+    background: #F1F5F9 !important;
+    color: #0F172A !important;
+    border-bottom: 1.5px solid #CBD5E1 !important;
+  }
+
+  [data-theme="dark"] .ing-count-hero {
+    background: #F8FAFC !important;
+    color: #0F172A !important;
+    border: 1px solid #CBD5E1 !important;
+  }
+
+  [data-theme="dark"] .hero-count-val,
+  [data-theme="dark"] .qty-val {
+    color: #0D9488 !important;
+  }
+
+  [data-theme="dark"] .scaler-panel,
+  [data-theme="dark"] .instructions-content {
+    background: #F8FAFC !important;
+    border: 1px solid #E2E8F0 !important;
+    color: #000000 !important;
+  }
+
+  [data-theme="dark"] .instruction-step {
+    background: transparent !important;
+    border: none !important;
+    color: #000000 !important;
+  }
+
+  [data-theme="dark"] .step-num {
+    background: #F1F5F9 !important;
+    color: #0F172A !important;
+    border: 1px solid #CBD5E1 !important;
   }
 }
 

@@ -9,6 +9,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
   <link rel="stylesheet" href="style.css">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('recipe_theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
 </head>
 <body>
   <!-- Top Navigation Header -->
@@ -60,6 +71,11 @@
             <option value="fr">Français (French)</option>
           </select>
         </div>
+
+        <!-- Dark / Light Theme Toggle -->
+        <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark / Light Theme" aria-label="Toggle Dark or Light Theme">
+          <span class="theme-toggle-icon" id="themeToggleIcon">🌙</span>
+        </button>
       </div>
     </div>
   </header>
