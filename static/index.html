@@ -60,11 +60,6 @@
             <option value="fr">Français (French)</option>
           </select>
         </div>
-
-        <button class="btn btn-primary" id="btnOpenCreate">
-          <span class="btn-icon">＋</span>
-          <span data-i18n="create_recipe">Create New Recipe</span>
-        </button>
       </div>
     </div>
   </header>
@@ -234,112 +229,9 @@
 
       <div class="modal-footer">
         <div class="footer-right" style="margin-left: auto;">
-          <button class="btn btn-secondary" id="btnEditRecipe" data-i18n="edit_recipe">✏️ Edit Recipe</button>
           <button class="btn btn-pdf" id="btnModalPdfFooter" data-i18n="download_scaled_pdf">📄 Download Scaled PDF</button>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Create / Edit Recipe Modal -->
-  <div class="modal-backdrop" id="editModalBackdrop">
-    <div class="modal-card modal-lg" id="editModalCard">
-      <div class="modal-header">
-        <div class="modal-title-wrap">
-          <h2 class="modal-title" id="editModalTitle" data-i18n="modal_create_title">Create New Recipe</h2>
-          <div class="modal-subtitle">Add full recipe details with dynamic ingredients list and yield</div>
-        </div>
-        <button class="btn-close" id="btnCloseEditModal">✕</button>
-      </div>
-
-      <form id="recipeForm" onsubmit="handleSaveRecipe(event)">
-        <div class="modal-body">
-          <input type="hidden" id="editRecipeId" />
-
-          <!-- Basic Info Form -->
-          <div class="form-grid">
-            <div class="form-group form-span-2">
-              <label for="formTitle" data-i18n="form_title">Recipe Title *</label>
-              <input type="text" id="formTitle" required placeholder="e.g. Special Kashmiri Dum Aloo" />
-            </div>
-
-            <div class="form-group">
-              <label for="formCategory" data-i18n="form_category">Category *</label>
-              <input list="categoryListOptions" id="formCategory" required placeholder="Select or type category..." />
-              <datalist id="categoryListOptions">
-                <!-- Dynamically populated categories -->
-              </datalist>
-            </div>
-
-            <div class="form-group">
-              <label for="formCuisine" data-i18n="form_cuisine">Cuisine / Style / Author</label>
-              <input type="text" id="formCuisine" placeholder="e.g. North Indian / HG Govinda P" />
-            </div>
-
-            <div class="form-group">
-              <label for="formBaseYield" data-i18n="form_base_yield">Base Yield *</label>
-              <input type="number" id="formBaseYield" required min="0.1" step="any" value="100" />
-            </div>
-
-            <div class="form-group">
-              <label for="formYieldUnit" data-i18n="form_yield_unit">Yield Unit *</label>
-              <select id="formYieldUnit">
-                <option value="L">L (Liters)</option>
-                <option value="Kg">Kg (Kilograms)</option>
-                <option value="Nos.">Nos. (Numbers)</option>
-                <option value="pcs">pcs (Pieces)</option>
-                <option value="gm">gm (Grams)</option>
-                <option value="plates">plates (Plates)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Dynamic Ingredients Editor -->
-          <div class="form-ingredients-section">
-            <div class="form-ing-header">
-              <div class="form-ing-title-group">
-                <h3 class="section-heading" data-i18n="ingredients_list">Ingredients List</h3>
-                <span class="live-counter-pill" id="liveFormIngCount">Ingredients Count: 0</span>
-              </div>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="addIngredientRow()">
-                <span data-i18n="add_row">＋ Add Ingredient Row</span>
-              </button>
-            </div>
-
-            <div class="table-responsive">
-              <table class="form-ing-table" id="formIngTable">
-                <thead>
-                  <tr>
-                    <th style="width: 120px;" data-i18n="stage">Stage</th>
-                    <th data-i18n="ingredient_name">Ingredient Name *</th>
-                    <th style="width: 100px;" data-i18n="base_qty">Base Qty</th>
-                    <th style="width: 90px;" data-i18n="unit">Unit</th>
-                    <th data-i18n="notes">Preparation Notes</th>
-                    <th style="width: 44px;"></th>
-                  </tr>
-                </thead>
-                <tbody id="formIngTableBody">
-                  <!-- Dynamic rows -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Cooking Instructions -->
-          <div class="form-group" style="margin-top: 20px;">
-            <label for="formInstructions" data-i18n="cooking_instructions">Cooking Instructions / Method (One step per line)</label>
-            <textarea id="formInstructions" rows="5" placeholder="1. Heat oil and add cumin seeds, mustard seeds.
-2. Add ginger paste and spices, saute well.
-3. Pour water and simmer for 20 minutes."></textarea>
-          </div>
-
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" id="btnCancelEdit" data-i18n="cancel">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="btnSubmitRecipe" data-i18n="save_recipe">Save Recipe</button>
-        </div>
-      </form>
     </div>
   </div>
 

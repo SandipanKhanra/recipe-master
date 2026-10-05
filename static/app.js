@@ -21,10 +21,6 @@ const emptyState = document.getElementById('emptyState');
 // Modals
 const recipeModalBackdrop = document.getElementById('recipeModalBackdrop');
 const btnCloseModal = document.getElementById('btnCloseModal');
-const editModalBackdrop = document.getElementById('editModalBackdrop');
-const btnCloseEditModal = document.getElementById('btnCloseEditModal');
-const btnCancelEdit = document.getElementById('btnCancelEdit');
-const btnOpenCreate = document.getElementById('btnOpenCreate');
 
 // Scaler Elements
 const targetYieldInput = document.getElementById('targetYieldInput');
@@ -41,11 +37,6 @@ const instructionsContent = document.getElementById('instructionsContent');
 const btnDownloadPdf = document.getElementById('btnDownloadPdf');
 const btnModalPdfFooter = document.getElementById('btnModalPdfFooter');
 const btnPrintRecipe = document.getElementById('btnPrintRecipe');
-const btnEditRecipe = document.getElementById('btnEditRecipe');
-
-// Live Form Counter
-const liveFormIngCount = document.getElementById('liveFormIngCount');
-const formIngTableBody = document.getElementById('formIngTableBody');
 
 // Toast
 const toast = document.getElementById('toast');
@@ -165,17 +156,6 @@ function setupEventListeners() {
     if (e.target === recipeModalBackdrop) closeRecipeModal();
   });
 
-  btnCloseEditModal.addEventListener('click', closeEditModal);
-  btnCancelEdit.addEventListener('click', closeEditModal);
-  editModalBackdrop.addEventListener('click', (e) => {
-    if (e.target === editModalBackdrop) closeEditModal();
-  });
-
-  // Open Create Modal
-  btnOpenCreate.addEventListener('click', () => {
-    openCreateModal();
-  });
-
   // Target yield change
   targetYieldInput.addEventListener('input', (e) => {
     const val = parseFloat(e.target.value);
@@ -205,13 +185,6 @@ function setupEventListeners() {
   // Print
   btnPrintRecipe.addEventListener('click', () => {
     window.print();
-  });
-
-  // Edit from view modal
-  btnEditRecipe.addEventListener('click', () => {
-    if (!activeRecipe) return;
-    closeRecipeModal();
-    openEditModal(activeRecipe);
   });
 
   // Language Selector Change
@@ -248,9 +221,11 @@ async function loadCategories() {
     const categories = await res.json();
     allCategoryObjects = categories;
     
-    // Update Datalist in form
+    // Update Datalist in form (if present)
     const datalist = document.getElementById('categoryListOptions');
-    datalist.innerHTML = categories.map(c => `<option value="${c.category}">`).join('');
+    if (datalist) {
+      datalist.innerHTML = categories.map(c => `<option value="${c.category}">`).join('');
+    }
 
     renderCategoryChips(categories);
   } catch (err) {
@@ -574,189 +549,10 @@ function directPdfDownload(recipeId, baseYield) {
   showToast('Generating recipe PDF...');
 }
 
-// Create & Edit Modal
-function openCreateModal() {
-  document.getElementById('editModalTitle').textContent = 'Create New Recipe';
-  document.getElementById('editRecipeId').value = '';
-  document.getElementById('recipeForm').reset();
-  formIngTableBody.innerHTML = '';
-  for (let i = 0; i < 4; i++) addIngredientRow();
-  updateLiveFormIngCount();
-  editModalBackdrop.classList.add('show');
-}
-
-function openEditModal(recipe) {
-  document.getElementById('editModalTitle').textContent = `Edit Recipe: ${recipe.title}`;
-  document.getElementById('editRecipeId').value = recipe.id;
-  document.getElementById('formTitle').value = recipe.title;
-  document.getElementById('formCategory').value = recipe.category;
-  document.getElementById('formCuisine').value = recipe.cuisine || '';
-  document.getElementById('formBaseYield').value = recipe.base_yield || 100;
-  document.getElementById('formYieldUnit').value = recipe.yield_unit || 'Kg';
-  document.getElementById('formInstructions').value = (recipe.instructions || []).join('\n');
-
-  formIngTableBody.innerHTML = '';
-  (recipe.ingredients || []).forEach(ing => {
-    addIngredientRow(ing);
-  });
-  if (!recipe.ingredients || recipe.ingredients.length === 0) {
-    addIngredientRow();
-  }
-  updateLiveFormIngCount();
-  editModalBackdrop.classList.add('show');
-}
-
-function addIngredientRow(data = {}) {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td>
-      <select class="ing-stage-input">
-        <option value="Main" ${data.stage === 'Main' ? 'selected' : ''}>Main</option>
-        <option value="Chaunk / Tadka" ${data.stage && data.stage.includes('Chaunk') ? 'selected' : ''}>Chaunk / Tadka</option>
-        <option value="Paste" ${data.stage === 'Paste' ? 'selected' : ''}>Paste</option>
-        <option value="Seasoning" ${data.stage === 'Seasoning' ? 'selected' : ''}>Seasoning</option>
-        <option value="Garnish" ${data.stage === 'Garnish' ? 'selected' : ''}>Garnish</option>
-      </select>
-    </td>
-    <td>
-      <input type="text" class="ing-name-input" required placeholder="e.g. Cumin Seeds" value="${escapeHtml(data.name || '')}" oninput="updateLiveFormIngCount()" />
-    </td>
-    <td>
-      <input type="number" step="any" min="0" class="ing-qty-input" placeholder="Qty" value="${data.quantity !== undefined ? data.quantity : ''}" />
-    </td>
-    <td>
-      <select class="ing-unit-input">
-        <option value="gm" ${data.unit === 'gm' ? 'selected' : ''}>gm</option>
-        <option value="Kg" ${data.unit === 'Kg' ? 'selected' : ''}>Kg</option>
-        <option value="L" ${data.unit === 'L' ? 'selected' : ''}>L</option>
-        <option value="ml" ${data.unit === 'ml' ? 'selected' : ''}>ml</option>
-        <option value="Nos." ${data.unit === 'Nos.' ? 'selected' : ''}>Nos.</option>
-        <option value="pcs" ${data.unit === 'pcs' ? 'selected' : ''}>pcs</option>
-        <option value="gaddi" ${data.unit === 'gaddi' ? 'selected' : ''}>gaddi</option>
-        <option value="tbsp" ${data.unit === 'tbsp' ? 'selected' : ''}>tbsp</option>
-      </select>
-    </td>
-    <td>
-      <input type="text" class="ing-notes-input" placeholder="Prep notes (e.g. soak overnight)" value="${escapeHtml(data.notes || '')}" />
-    </td>
-    <td style="text-align: center;">
-      <button type="button" class="btn-remove-row" onclick="removeIngredientRow(this)" title="Remove Ingredient">✕</button>
-    </td>
-  `;
-  formIngTableBody.appendChild(tr);
-  updateLiveFormIngCount();
-}
-
-function removeIngredientRow(btn) {
-  const row = btn.closest('tr');
-  if (row) {
-    row.remove();
-    updateLiveFormIngCount();
-  }
-}
-
-function updateLiveFormIngCount() {
-  const rows = formIngTableBody.querySelectorAll('tr');
-  let filledCount = 0;
-  rows.forEach(r => {
-    const nameVal = r.querySelector('.ing-name-input')?.value.trim();
-    if (nameVal) filledCount++;
-  });
-  liveFormIngCount.textContent = `Ingredients Count: ${filledCount} (${rows.length} rows)`;
-}
-
-// Save Recipe Handler
-async function handleSaveRecipe(e) {
-  e.preventDefault();
-  const recipeId = document.getElementById('editRecipeId').value;
-  const isEditing = !!recipeId;
-
-  const title = document.getElementById('formTitle').value.trim();
-  const category = document.getElementById('formCategory').value.trim();
-  const cuisine = document.getElementById('formCuisine').value.trim();
-  const baseYield = parseFloat(document.getElementById('formBaseYield').value) || 100;
-  const yieldUnit = document.getElementById('formYieldUnit').value;
-  const instructionsRaw = document.getElementById('formInstructions').value;
-  const instructions = instructionsRaw.split('\n').map(s => s.trim()).filter(s => s.length > 0);
-
-  const ingredients = [];
-  const rows = formIngTableBody.querySelectorAll('tr');
-  rows.forEach(r => {
-    const name = r.querySelector('.ing-name-input')?.value.trim();
-    if (name) {
-      const stage = r.querySelector('.ing-stage-input')?.value || 'Main';
-      const qty = parseFloat(r.querySelector('.ing-qty-input')?.value) || 0.0;
-      const unit = r.querySelector('.ing-unit-input')?.value || 'gm';
-      const notes = r.querySelector('.ing-notes-input')?.value.trim() || '';
-      ingredients.push({ name, stage, quantity: qty, unit, notes });
-    }
-  });
-
-  const payload = {
-    title,
-    category,
-    cuisine,
-    base_yield: baseYield,
-    yield_unit: yieldUnit,
-    ingredients,
-    instructions
-  };
-
-  if (isOfflineMode) {
-    if (isEditing) {
-      const idx = allRecipes.findIndex(r => r.id === recipeId);
-      if (idx !== -1) {
-        allRecipes[idx] = { ...allRecipes[idx], ...payload, ingredients_count: ingredients.length };
-      }
-    } else {
-      const newRec = {
-        id: 'custom_' + Date.now(),
-        ...payload,
-        ingredients_count: ingredients.length
-      };
-      allRecipes.unshift(newRec);
-    }
-    closeEditModal();
-    showToast(`Recipe "${title}" saved successfully with ${ingredients.length} ingredients!`);
-    filterAndRenderOffline();
-    return;
-  }
-
-  try {
-    const url = isEditing ? `/api/recipes/${recipeId}` : '/api/recipes';
-    const method = isEditing ? 'PUT' : 'POST';
-
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) throw new Error('Failed to save recipe');
-    const saved = await res.json();
-
-    closeEditModal();
-    showToast(`Recipe "${saved.title}" saved successfully with ${saved.ingredients_count} ingredients!`);
-    loadRecipes();
-    loadStats();
-    loadCategories();
-    
-    if (isEditing && activeRecipe && activeRecipe.id === recipeId) {
-      viewRecipe(recipeId);
-    }
-  } catch (err) {
-    alert('Error saving recipe: ' + err.message);
-  }
-}
-
 // Modal control helpers
 function closeRecipeModal() {
   recipeModalBackdrop.classList.remove('show');
   activeRecipe = null;
-}
-
-function closeEditModal() {
-  editModalBackdrop.classList.remove('show');
 }
 
 function resetFilters() {
