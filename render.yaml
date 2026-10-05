@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: recipe-master
+    env: python
+    buildCommand: pip install -r requirements.txt && python database.py
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    plan: free
+    healthCheckPath: /api/stats
+    autoDeploy: true

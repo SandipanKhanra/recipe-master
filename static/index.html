@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Master | Institutional Kitchen Management & Yield Scaler</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-inner container">
+      <div class="brand">
+        <div class="brand-icon" title="100% Pure Vegetarian">🌿</div>
+        <div class="brand-text">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="brand-title">Recipe Master</span>
+            <span class="veg-badge-indicator" title="100% Pure Vegetarian">
+              <span class="veg-dot"></span>
+            </span>
+          </div>
+          <span class="brand-tag">Institutional Kitchen Backbone • 100% Pure Vegetarian (RM 2019)</span>
+        </div>
+      </div>
+      
+      <div class="header-stats" id="headerStats">
+        <div class="stat-pill">
+          <span class="stat-num" id="statRecipes">446</span>
+          <span class="stat-lbl">Recipes</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-num" id="statCategories">19</span>
+          <span class="stat-lbl">Categories</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-num" id="statIngredients">6,571</span>
+          <span class="stat-lbl">Ingredients</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="btnOpenCreate">
+          <span class="btn-icon">＋</span>
+          <span>Create New Recipe</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container main-content">
+    
+    <!-- Controls Bar: Search & Categories -->
+    <section class="controls-section">
+      <div class="search-sort-bar">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search by recipe name, ingredient (e.g. Toor Dal, Paneer), or cuisine..." />
+          <button id="btnClearSearch" class="btn-clear" style="display:none;">✕</button>
+        </div>
+        <div class="sort-wrapper">
+          <label for="sortSelect">Sort:</label>
+          <select id="sortSelect">
+            <option value="name_asc">Name (A-Z)</option>
+            <option value="name_desc">Name (Z-A)</option>
+            <option value="ing_desc">Ingredients Count (High to Low)</option>
+            <option value="ing_asc">Ingredients Count (Low to High)</option>
+            <option value="yield_desc">Yield (High to Low)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="category-chips-wrapper">
+        <div class="category-chips" id="categoryChips">
+          <button class="chip active" data-cat="all">All Recipes <span class="chip-count" id="countAll">446</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Status Bar -->
+    <div class="results-header">
+      <div class="results-count" id="resultsCount">Loading recipes...</div>
+      <div class="results-legend">
+        <span class="legend-badge">🌿 <strong>Ingredients Count</strong> highlighted on each card</span>
+      </div>
+    </div>
+
+    <!-- Recipe Cards Grid -->
+    <section class="recipes-grid" id="recipesGrid">
+      <!-- Dynamic recipe cards -->
+    </section>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <div class="empty-icon">🍲</div>
+      <h3>No matching recipes found</h3>
+      <p>Try modifying your search or choosing a different category filter.</p>
+      <button class="btn btn-secondary" onclick="resetFilters()">Reset Filters</button>
+    </div>
+  </main>
+
+  <!-- Recipe Details & Scaler Modal / Drawer -->
+  <div class="modal-backdrop" id="recipeModalBackdrop">
+    <div class="modal-card modal-lg" id="recipeModalCard">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-badges" id="modalCategoryBadges"></div>
+          <h2 class="modal-title" id="modalRecipeTitle">Recipe Title</h2>
+          <div class="modal-subtitle" id="modalRecipeCuisine">Cuisine Details</div>
+        </div>
+        <button class="btn-close" id="btnCloseModal" title="Close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Ingredients Count High-Visibility Hero Banner -->
+        <div class="ing-count-hero" id="ingCountHero">
+          <div class="hero-count-box">
+            <span class="hero-count-val" id="heroIngCount">14</span>
+            <span class="hero-count-lbl">Total Ingredients</span>
+          </div>
+          <div class="hero-breakdown" id="heroIngBreakdown">
+            <!-- Stage breakdown e.g. Main (6) • Chaunk (4) • Paste (4) -->
+          </div>
+          <div class="hero-action-buttons">
+            <button class="btn btn-pdf" id="btnDownloadPdf">
+              <span>📄 Download PDF</span>
+            </button>
+            <button class="btn btn-outline" id="btnPrintRecipe">
+              <span>🖨️ Print</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Yield Scaling Controls -->
+        <div class="scaler-panel">
+          <div class="scaler-header">
+            <div class="scaler-title-group">
+              <span class="scaler-label">⚡ Dynamic Yield Scaler</span>
+              <span class="scaler-formula-note">Formula: Scaled Qty = Base Qty × (Target ÷ Base Yield)</span>
+            </div>
+            <div class="base-yield-badge" id="modalBaseYieldBadge">
+              Base: 100 L
+            </div>
+          </div>
+
+          <div class="scaler-controls-row">
+            <div class="yield-input-group">
+              <label for="targetYieldInput">Target Yield:</label>
+              <div class="input-with-unit">
+                <input type="number" id="targetYieldInput" min="0.1" step="any" value="100" />
+                <span class="unit-tag" id="modalYieldUnit">L</span>
+              </div>
+            </div>
+
+            <div class="quick-scale-buttons">
+              <span class="quick-lbl">Quick Scale:</span>
+              <button class="btn-scale-chip" data-factor="0.25">0.25x</button>
+              <button class="btn-scale-chip" data-factor="0.5">0.5x</button>
+              <button class="btn-scale-chip active" data-factor="1.0">1x (Base)</button>
+              <button class="btn-scale-chip" data-factor="2.0">2x</button>
+              <button class="btn-scale-chip" data-factor="5.0">5x</button>
+              <button class="btn-scale-chip" data-factor="10.0">10x</button>
+            </div>
+          </div>
+
+          <div class="scale-factor-banner" id="scaleFactorBanner">
+            Multiplier: <strong>1.00x</strong> — All ingredient quantities are updated below.
+          </div>
+        </div>
+
+        <!-- Ingredients Table with Stages -->
+        <div class="ingredients-section">
+          <div class="section-title-row">
+            <h3 class="section-heading">Ingredients List</h3>
+            <span class="count-tag" id="ingTableCountBadge">14 Items</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="recipe-table" id="ingredientsTable">
+              <thead>
+                <tr>
+                  <th style="width: 44px; text-align: center;">Prep</th>
+                  <th style="width: 100px;">Stage</th>
+                  <th>Ingredient Name</th>
+                  <th style="width: 110px; text-align: right;">Base Qty</th>
+                  <th style="width: 120px; text-align: right;">Scaled Qty</th>
+                  <th style="width: 60px;">Unit</th>
+                  <th>Preparation / Cooking Notes</th>
+                </tr>
+              </thead>
+              <tbody id="ingredientsTableBody">
+                <!-- Ingredients rows rendered here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Cooking Instructions & Method -->
+        <div class="instructions-section">
+          <h3 class="section-heading">Method & Cooking Instructions</h3>
+          <div class="instructions-content" id="instructionsContent">
+            <!-- Step by step instructions -->
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <div class="footer-right" style="margin-left: auto;">
+          <button class="btn btn-secondary" id="btnEditRecipe">✏️ Edit Recipe</button>
+          <button class="btn btn-pdf" id="btnModalPdfFooter">📄 Download Scaled PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create / Edit Recipe Modal -->
+  <div class="modal-backdrop" id="editModalBackdrop">
+    <div class="modal-card modal-lg" id="editModalCard">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2 class="modal-title" id="editModalTitle">Create New Recipe</h2>
+          <div class="modal-subtitle">Add full recipe details with dynamic ingredients list and yield</div>
+        </div>
+        <button class="btn-close" id="btnCloseEditModal">✕</button>
+      </div>
+
+      <form id="recipeForm" onsubmit="handleSaveRecipe(event)">
+        <div class="modal-body">
+          <input type="hidden" id="editRecipeId" />
+
+          <!-- Basic Info Form -->
+          <div class="form-grid">
+            <div class="form-group form-span-2">
+              <label for="formTitle">Recipe Title *</label>
+              <input type="text" id="formTitle" required placeholder="e.g. Special Kashmiri Dum Aloo" />
+            </div>
+
+            <div class="form-group">
+              <label for="formCategory">Category *</label>
+              <input list="categoryListOptions" id="formCategory" required placeholder="Select or type category..." />
+              <datalist id="categoryListOptions">
+                <!-- Dynamically populated categories -->
+              </datalist>
+            </div>
+
+            <div class="form-group">
+              <label for="formCuisine">Cuisine / Style / Author</label>
+              <input type="text" id="formCuisine" placeholder="e.g. North Indian / HG Govinda P" />
+            </div>
+
+            <div class="form-group">
+              <label for="formBaseYield">Base Yield *</label>
+              <input type="number" id="formBaseYield" required min="0.1" step="any" value="100" />
+            </div>
+
+            <div class="form-group">
+              <label for="formYieldUnit">Yield Unit *</label>
+              <select id="formYieldUnit">
+                <option value="L">L (Liters)</option>
+                <option value="Kg">Kg (Kilograms)</option>
+                <option value="Nos.">Nos. (Numbers)</option>
+                <option value="pcs">pcs (Pieces)</option>
+                <option value="gm">gm (Grams)</option>
+                <option value="plates">plates (Plates)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Ingredients Editor -->
+          <div class="form-ingredients-section">
+            <div class="form-ing-header">
+              <div class="form-ing-title-group">
+                <h3 class="section-heading">Ingredients List</h3>
+                <span class="live-counter-pill" id="liveFormIngCount">Ingredients Count: 0</span>
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="addIngredientRow()">
+                ＋ Add Ingredient Row
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="form-ing-table" id="formIngTable">
+                <thead>
+                  <tr>
+                    <th style="width: 120px;">Stage</th>
+                    <th>Ingredient Name *</th>
+                    <th style="width: 100px;">Base Qty</th>
+                    <th style="width: 90px;">Unit</th>
+                    <th>Preparation Notes</th>
+                    <th style="width: 44px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="formIngTableBody">
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Cooking Instructions -->
+          <div class="form-group" style="margin-top: 20px;">
+            <label for="formInstructions">Cooking Instructions / Method (One step per line)</label>
+            <textarea id="formInstructions" rows="5" placeholder="1. Heat oil and add cumin seeds, mustard seeds.
+2. Add ginger paste and spices, saute well.
+3. Pour water and simmer for 20 minutes."></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelEdit">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitRecipe">Save Recipe</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">Recipe saved successfully!</div>
+
+  <!-- Embedded seed data for instant preview, then main app -->
+  <script src="recipes_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
