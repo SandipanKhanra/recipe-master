@@ -80,6 +80,11 @@ body.dark-theme,
   padding: 0;
 }
 
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-main);
   background-color: var(--bg-app);
@@ -2430,7 +2435,7 @@ body.dark-theme .controls-section {
 @media (max-width: 1080px) {
   .header-inner {
     height: auto;
-    padding: 10px 0;
+    padding: 12px 0;
     flex-wrap: wrap;
     gap: 12px;
   }
@@ -2446,61 +2451,426 @@ body.dark-theme .controls-section {
 }
 
 @media (max-width: 768px) {
+  /* Fix mobile browser fixed background rendering bugs */
+  body,
+  html[data-theme="dark"] body,
+  body[data-theme="dark"] {
+    background-attachment: scroll !important;
+  }
+
+  .container {
+    padding: 0 12px !important;
+    max-width: 100% !important;
+  }
+
+  .main-content {
+    padding-top: 14px;
+    padding-bottom: 40px;
+  }
+
+  /* Clean Two-Row App Header on Mobile */
   .app-header {
     position: relative;
     top: auto;
   }
-  .controls-section {
-    top: 0;
-    padding: 12px 14px;
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
-  }
+
   .header-inner {
     height: auto;
-    padding: 12px 0;
+    padding: 10px 0 8px 0;
+    display: flex;
     flex-wrap: wrap;
-  }
-  .header-actions {
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
     gap: 8px;
   }
+
+  /* Row 1 Left: Brand */
+  .brand {
+    order: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .brand-icon {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    font-size: 22px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+  }
+
+  .brand-title {
+    font-size: 1.15rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .brand-tag {
+    font-size: 0.68rem;
+    line-height: 1.25;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+
+  .brand-tag .brand-tag-prefix {
+    display: none;
+  }
+
+  /* Row 1 Right: Actions aligned on top bar */
+  .header-actions {
+    order: 2;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .lang-selector-box {
+    padding: 5px 8px;
+    gap: 4px;
+    border-radius: var(--radius-sm);
+  }
+
+  .lang-globe-icon {
+    font-size: 0.95rem;
+  }
+
+  .lang-dropdown {
+    font-size: 0.8rem;
+    max-width: 82px;
+    padding-right: 2px;
+  }
+
+  .theme-toggle-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: var(--radius-sm);
+    font-size: 1.1rem;
+  }
+
+  /* Row 2: Stats Strip */
   .header-stats {
     order: 3;
     width: 100%;
-    overflow-x: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding-top: 4px;
+    margin-top: 2px;
+    border-top: 1px solid rgba(226, 232, 240, 0.6);
   }
+
+  [data-theme="dark"] .header-stats {
+    border-top-color: rgba(36, 50, 72, 0.6);
+  }
+
+  .stat-pill {
+    flex: 1;
+    justify-content: center;
+    padding: 3px 6px;
+    font-size: 0.75rem;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  .stat-num {
+    font-size: 0.82rem;
+  }
+
+  .stat-lbl {
+    font-size: 0.72rem;
+  }
+
+  /* Controls Section Mobile: Edge-to-edge sleek dock */
+  .controls-section {
+    position: sticky;
+    top: 0;
+    z-index: 35;
+    padding: 10px 12px 10px 12px;
+    margin-left: -12px;
+    margin-right: -12px;
+    margin-bottom: 16px;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    gap: 8px;
+  }
+
   .search-sort-bar {
     flex-direction: column;
+    gap: 8px;
   }
+
+  .search-wrapper input {
+    padding: 10px 34px 10px 38px;
+    font-size: 0.88rem;
+    border-radius: var(--radius-md);
+  }
+
+  .search-icon {
+    left: 12px;
+    font-size: 0.85rem;
+  }
+
   .sort-wrapper {
     width: 100%;
+    display: flex;
     justify-content: space-between;
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.82rem;
   }
-  .form-grid {
-    grid-template-columns: 1fr;
+
+  .category-chips-wrapper {
+    margin: 0 -4px;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
-  .form-span-2 {
-    grid-column: span 1;
+
+  .category-chips-wrapper::-webkit-scrollbar {
+    display: none;
   }
+
+  .category-chips {
+    gap: 6px;
+  }
+
+  .chip {
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    gap: 4px;
+  }
+
+  .chip-count {
+    font-size: 0.7rem;
+    padding: 1px 5px;
+  }
+
+  /* Results Header */
+  .results-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .results-count {
+    font-size: 0.82rem;
+  }
+
+  /* Recipe Grid: 1 Column Full Width Responsive */
+  .recipes-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .recipe-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+    padding: 16px 14px 14px 14px;
+    border-radius: var(--radius-md);
+    contain-intrinsic-size: auto;
+  }
+
+  .recipe-title {
+    font-size: 1.05rem;
+    line-height: 1.35;
+    margin-bottom: 8px;
+  }
+
+  .card-badges {
+    margin-bottom: 6px;
+  }
+
+  .badge {
+    font-size: 0.68rem;
+    padding: 2px 6px;
+  }
+
+  .card-metrics-row {
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .ing-count-pill {
+    font-size: 0.78rem;
+    padding: 3px 8px;
+  }
+
+  .yield-pill {
+    font-size: 0.78rem;
+    padding: 3px 8px;
+  }
+
+  .card-footer {
+    padding-top: 10px;
+    gap: 6px;
+  }
+
+  .btn-card-scale {
+    font-size: 0.8rem;
+    padding: 8px 10px;
+  }
+
+  .btn-card-pdf {
+    font-size: 0.8rem;
+    padding: 8px 10px;
+  }
+
+  .btn-card-search {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+
+  /* Pagination Mobile */
+  .pagination-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-top: 20px;
+  }
+
+  .pagination-info {
+    font-size: 0.8rem;
+  }
+
+  .pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .btn-page {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .btn-page-nav {
+    padding: 0 6px;
+    font-size: 0.75rem;
+  }
+
+  .page-size-selector {
+    font-size: 0.78rem;
+  }
+
+  .page-size-selector select {
+    padding: 4px 8px;
+    font-size: 0.78rem;
+  }
+
+  /* Modal on Mobile */
+  .modal-backdrop {
+    padding: 8px;
+  }
+
+  .modal-card {
+    max-height: 96vh;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-header {
+    padding: 14px 16px;
+  }
+
+  .modal-title {
+    font-size: 1.15rem;
+  }
+
+  .modal-body {
+    padding: 14px 16px;
+    gap: 16px;
+  }
+
   .ing-count-hero {
     flex-direction: column;
     align-items: flex-start;
+    padding: 14px 16px;
+    gap: 12px;
   }
+
   .hero-breakdown {
     border-left: none;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     padding-left: 0;
-    padding-top: 10px;
+    padding-top: 8px;
     width: 100%;
+    font-size: 0.82rem;
   }
-  .pagination-section {
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-  }
-  .pagination-controls {
+
+  .hero-action-buttons {
+    width: 100%;
     flex-wrap: wrap;
-    justify-content: center;
+    gap: 6px;
+  }
+
+  .hero-action-buttons .btn {
+    flex: 1;
+    font-size: 0.8rem;
+    padding: 7px 10px;
+  }
+
+  .scaler-panel {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .scaler-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .yield-input-group {
+    justify-content: space-between;
+  }
+
+  .quick-scale-buttons {
+    width: 100%;
+    gap: 4px;
+  }
+
+  .btn-scale-chip {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+
+  .modal-footer {
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-title {
+    font-size: 1.05rem;
+  }
+
+  .brand-tag {
+    max-width: 150px;
+  }
+
+  .lang-dropdown {
+    max-width: 68px;
+    font-size: 0.75rem;
+  }
+
+  .stat-pill {
+    padding: 2px 4px;
+    font-size: 0.7rem;
   }
 }
