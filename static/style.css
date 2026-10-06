@@ -1012,7 +1012,7 @@ body {
   padding: 16px 24px;
   border-top: 1px solid var(--border);
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   background: var(--bg-subtle);
   gap: 12px;
@@ -1021,6 +1021,17 @@ body {
 .footer-right {
   display: flex;
   gap: 10px;
+}
+
+.modal-footer .btn-pdf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 6px rgba(190, 18, 60, 0.25);
 }
 
 /* High-Visibility Hero Banner for Ingredients Count in Modal */
@@ -1067,26 +1078,53 @@ body {
 
 .hero-action-buttons {
   display: flex;
+  align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .hero-action-buttons .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   background: #FFFFFF;
   color: #0F766E;
   font-weight: 700;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid transparent;
 }
 
 .hero-action-buttons .btn:hover {
   background: #F0FDFA;
+  transform: translateY(-1px);
 }
 
 .hero-action-buttons .btn-pdf {
-  background: #E11D48;
+  background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
   color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.3);
 }
 
 .hero-action-buttons .btn-pdf:hover {
-  background: #BE123C;
+  background: linear-gradient(135deg, #BE123C 0%, #9F1239 100%);
+}
+
+.hero-action-buttons #btnGoogleSearchRecipe {
+  background: #FFFFFF;
+  color: #4338CA;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.hero-action-buttons #btnGoogleSearchRecipe:hover {
+  background: #EEF2FF;
+  border-color: #6366F1;
 }
 
 /* Scaler Panel */
@@ -1922,6 +1960,52 @@ body.dark-theme .controls-section {
 [data-theme="dark"] .modal-footer {
   background: #0B0F19;
   border-top-color: #1E293B;
+}
+
+[data-theme="dark"] .hero-action-buttons #btnDownloadPdf,
+body[data-theme="dark"] .hero-action-buttons #btnDownloadPdf {
+  background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(244, 63, 94, 0.4) !important;
+}
+
+[data-theme="dark"] .hero-action-buttons #btnPrintRecipe,
+body[data-theme="dark"] .hero-action-buttons #btnPrintRecipe {
+  background: #192438 !important;
+  color: #2DD4BF !important;
+  border: 1px solid #27374E !important;
+}
+
+[data-theme="dark"] .hero-action-buttons #btnPrintRecipe:hover,
+body[data-theme="dark"] .hero-action-buttons #btnPrintRecipe:hover {
+  background: #202F48 !important;
+  border-color: #14B8A6 !important;
+}
+
+[data-theme="dark"] .hero-action-buttons #btnGoogleSearchRecipe,
+body[data-theme="dark"] .hero-action-buttons #btnGoogleSearchRecipe {
+  background: linear-gradient(135deg, #1E1B4B 0%, #282566 100%) !important;
+  color: #C7D2FE !important;
+  border: 1px solid #4F46E5 !important;
+}
+
+[data-theme="dark"] .hero-action-buttons #btnGoogleSearchRecipe:hover,
+body[data-theme="dark"] .hero-action-buttons #btnGoogleSearchRecipe:hover {
+  background: linear-gradient(135deg, #2E287A 0%, #3730A3 100%) !important;
+  color: #FFFFFF !important;
+  border-color: #6366F1 !important;
+}
+
+[data-theme="dark"] .modal-footer #btnModalPdfFooter,
+body[data-theme="dark"] .modal-footer #btnModalPdfFooter {
+  background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35) !important;
+}
+
+[data-theme="dark"] .modal-footer #btnModalPdfFooter:hover,
+body[data-theme="dark"] .modal-footer #btnModalPdfFooter:hover {
+  background: linear-gradient(135deg, #BE123C 0%, #9F1239 100%) !important;
 }
 
 [data-theme="dark"] .btn-close:hover {
@@ -2799,7 +2883,7 @@ body.dark-theme .controls-section {
 
   .ing-count-hero {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     padding: 14px 16px;
     gap: 12px;
   }
@@ -2815,14 +2899,54 @@ body.dark-theme .controls-section {
 
   .hero-action-buttons {
     width: 100%;
-    flex-wrap: wrap;
-    gap: 6px;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 4px;
   }
 
   .hero-action-buttons .btn {
-    flex: 1;
-    font-size: 0.8rem;
-    padding: 7px 10px;
+    width: 100%;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 9px 10px;
+    min-height: 40px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    text-align: center;
+    border-radius: var(--radius-md);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .hero-action-buttons #btnDownloadPdf {
+    grid-column: 1;
+    background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .hero-action-buttons #btnPrintRecipe {
+    grid-column: 2;
+    background: #FFFFFF;
+    color: #0F766E;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  .hero-action-buttons #btnGoogleSearchRecipe {
+    grid-column: 1 / -1;
+    min-height: 38px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #EEF2FF 100%);
+    color: #4338CA;
+    border: 1px solid rgba(99, 102, 241, 0.25);
+  }
+
+  .hero-action-buttons #btnGoogleSearchRecipe:hover {
+    background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+    color: #3730A3;
   }
 
   .scaler-panel {
@@ -2852,6 +2976,56 @@ body.dark-theme .controls-section {
 
   .modal-footer {
     padding: 12px 16px;
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .modal-footer .footer-right {
+    width: 100%;
+    margin-left: 0 !important;
+    display: flex;
+  }
+
+  .modal-footer #btnModalPdfFooter {
+    width: 100%;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px;
+    padding: 11px 16px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    min-height: 44px;
+    white-space: nowrap;
+    text-align: center;
+    box-sizing: border-box;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.25);
+  }
+
+  .modal-footer #btnModalPdfFooter:hover {
+    background: linear-gradient(135deg, #BE123C 0%, #9F1239 100%);
+  }
+
+  .ing-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-width: 130px;
+  }
+
+  .ing-google-link {
+    font-size: 0.72rem;
+    padding: 2px 6px;
+    gap: 2px;
+    min-height: 24px;
+    flex-shrink: 0;
   }
 }
 
@@ -2872,5 +3046,25 @@ body.dark-theme .controls-section {
   .stat-pill {
     padding: 2px 4px;
     font-size: 0.7rem;
+  }
+
+  .hero-action-buttons {
+    gap: 6px;
+  }
+
+  .hero-action-buttons .btn {
+    font-size: 0.78rem;
+    padding: 8px 6px;
+    gap: 4px;
+  }
+
+  .modal-footer #btnModalPdfFooter {
+    font-size: 0.86rem;
+    padding: 10px 12px;
+  }
+
+  .ing-google-link {
+    font-size: 0.68rem;
+    padding: 2px 5px;
   }
 }
